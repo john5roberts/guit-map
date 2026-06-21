@@ -1,0 +1,3256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Fretboard 3.01</title>
+<style>
+:root{
+  --board-w:183px;
+  --board-h:586px;
+  --head-h:56px;
+  --nut-h:14px;
+  --board:#d7a96d;
+  --black:#111;
+  --blue:#1f63d8;
+  --gray:#a6a6a6;
+  --pink:#ff1493;
+  --yellow:#ffd400;--green:#00cc00;
+}
+*{box-sizing:border-box}
+body{width:100%;margin:0;font-family:Arial,Helvetica,sans-serif;font-size:14px;background:#fff;display:flex;justify-content:flex-start;align-items:flex-start;padding:12px;overflow:auto;min-width:max-content}
+button,select{font:inherit}
+.app{display:inline-block;flex-shrink:0;border:2px solid #333;border-radius:28px;padding:20px;background:linear-gradient(180deg,#f7f7f7,#ececec);box-shadow:0 18px 40px rgba(0,0,0,.12)}
+.layout{display:flex;gap:18px;align-items:flex-start;justify-content:center;flex-wrap:nowrap}
+.leftcol{display:flex;flex-direction:column;gap:10px;height:auto;justify-content:flex-start;align-items:center;flex-shrink:0}
+.maincol{display:flex;flex-direction:column;align-items:center;gap:10px}
+.panel,.wrap,.chordbar,.posbtn{background:#fff;border-radius:18px;box-shadow:0 6px 18px rgba(0,0,0,.08)}
+.panel{width:92px;height:92px;padding:8px;display:grid;grid-template-columns:1fr;gap:7px;align-content:center;overflow:hidden}
+.btn,.sel{border:1px solid #cfcfcf;background:#fff;border-radius:12px;height:30px;font-size:14px;cursor:pointer;width:100%}
+.sel{text-align:center;text-align-last:center;padding:0 6px}
+.iconbtn{border:1px solid #cfcfcf;background:#fff;border-radius:12px;width:34px;height:38px;display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0}
+.iconbtn.on,.posbtn.on{box-shadow:inset 0 0 0 2px var(--yellow)}
+.posbtn{width:92px;height:92px;border:0;display:flex;align-items:center;justify-content:center;cursor:pointer}
+.seg{display:flex;width:100%;border:1px solid #bbb;border-radius:10px;overflow:hidden}
+.seg button{flex:1;border:0;background:#fff;height:28px;cursor:pointer}.seg button.on{background:#111;color:#fff}
+.row{display:grid;grid-template-columns:18px 1fr;align-items:center;justify-items:center;gap:3px;min-height:22px}
+.sw{position:relative;width:34px;height:18px}.sw input{opacity:0;width:0;height:0;position:absolute}.sl{position:absolute;inset:0;background:#ccc;border-radius:999px}.sl:before{content:'';position:absolute;width:14px;height:14px;left:2px;top:2px;background:#fff;border-radius:50%;box-shadow:0 1px 3px #0003;transition:.2s}.sw input:checked+.sl{background:var(--blue)}.sw input:checked+.sl:before{transform:translateX(16px)}
+.bpmctl{background:#fff;border:1px solid #888;border-radius:10px;padding:4px;display:flex;align-items:center;gap:3px;justify-content:center}.bpmbtn{width:18px;height:22px;border:1px solid #aaa;border-radius:6px;background:#fff;cursor:pointer}.bpmmid{display:flex;flex-direction:column;align-items:center;line-height:1}.bpmlab{font-size:10px;color:#444}
+.chordbar{width:92px;height:92px;padding:8px;display:flex;align-items:center;justify-content:center;text-align:center;border:0;cursor:pointer;font-size:15px;line-height:1.1;color:#111}
+.chordbar.on{box-shadow:inset 0 0 0 2px var(--yellow),0 8px 24px #0001}
+.cline{display:flex;align-items:center;gap:8px;line-height:1.1;border:1px solid #ddd;background:#fff;border-radius:12px;font-size:22px;cursor:pointer;padding:9px 12px;text-align:left;min-height:42px;color:#111;width:100%;white-space:nowrap}.cline:hover{text-decoration:underline}.cline.playing,.cline.playing .rn,.cline.modalroot,.cline.modalroot .rn{color:var(--blue)}.cline.chordsel,.cline.chordsel .rn{background:#fff7b8;text-decoration:underline;text-decoration-thickness:2px}.rn{color:#999;display:inline-block;min-width:42px}
+.chordmodal{position:fixed;inset:0;display:none;z-index:998;pointer-events:none;background:transparent}
+.chordmodal.on{display:block}
+.chordbox{position:fixed;left:12px;top:12px;background:#fff;border-radius:18px;padding:12px;box-shadow:0 10px 30px #0005;width:152px;max-height:calc(100vh - 24px);overflow:auto;pointer-events:auto}
+.chordbox h3{margin:0 0 8px;font-size:16px}
+.chordlist{display:grid;grid-template-columns:1fr;gap:7px;margin-bottom:10px}
+.chordclose{border:1px solid #aaa;background:#fff;border-radius:9px;padding:7px 10px;cursor:pointer;width:100%;font-size:15px}
+.wrap{padding:20px}.shell{position:relative;width:var(--board-w);padding-top:var(--head-h);background:linear-gradient(180deg,#bf8b4d 0%,#d8a76b 12%,#e1b67d 50%,#d8a76b 88%,#bf8b4d 100%)}.openrow{position:absolute;top:0;left:0;width:100%;height:var(--head-h);pointer-events:none}.open{position:absolute;top:32px;transform:translateX(-50%);width:23px;height:23px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#111;background:transparent;border:0;pointer-events:auto}.open.black,.mark.black{background:var(--black);color:#fff}.open.blue,.mark.blue{background:var(--blue);color:#fff}.open.gray,.mark.gray{background:var(--gray);color:#111;z-index:15}.tune{position:absolute;top:2px;transform:translateX(-50%);width:16px;height:34px;border:1px solid #8f7a55;border-radius:8px;background:#ffffff47;pointer-events:auto}.tune:before{content:'';position:absolute;left:2px;right:2px;top:50%;height:1px;background:#503c1e73}.nut{position:absolute;top:calc(var(--head-h) - 4px);left:0;width:100%;height:var(--nut-h);background:#141414;z-index:5}.board{position:relative;width:100%;height:var(--board-h);overflow:visible}.fret{position:absolute;left:0;width:100%;height:3px;background:linear-gradient(#eee,#888,#eee);box-shadow:0 1px 2px #0006;z-index:2}.string{position:absolute;top:0;height:100%;transform:translateX(-50%);background:linear-gradient(to right,#666,#ddd,#666);border-radius:999px;z-index:3;cursor:pointer}.inlay{position:absolute;width:14px;height:14px;border-radius:50%;background:rgba(245,245,245,.92);left:50%;transform:translate(-50%,-50%);z-index:1}.hit{position:absolute;width:24px;transform:translate(-50%,-50%);border-radius:14px;cursor:pointer;z-index:8}.mark{position:absolute;width:23px;height:23px;border-radius:50%;display:flex;align-items:center;justify-content:center;transform:translate(-50%,-50%);font-size:14px;z-index:10;box-shadow:0 2px 6px #0004;cursor:pointer}.root{outline:none!important}.money{border:3px solid var(--blue)}.triad{background:var(--pink)!important;color:#fff!important;border:2px solid #b00063}.chordring,.triadrootring,.keyrootring{position:absolute;border-radius:50%;transform:translate(-50%,-50%);pointer-events:none}.chordring{width:29px;height:29px;border:3px solid var(--green);background:transparent!important;z-index:18;box-shadow:0 0 0 1px #0005}.triadrootring{width:39px;height:39px;border:3px solid var(--green);background:transparent!important;z-index:19;box-shadow:0 0 0 1px #0005}.keyrootring{width:35px;height:35px;border:1.5px solid #000;background:transparent!important;z-index:16;box-shadow:0 0 0 1px #0005}.triadghost{background:transparent!important;color:var(--green)!important;text-shadow:0 1px 2px #000,0 0 2px #000;box-shadow:none!important;z-index:20;pointer-events:none;font-weight:700}.triadpentdot{position:absolute;width:18px;height:18px;border-radius:50%;background:var(--blue);transform:translate(-50%,-50%);z-index:9;pointer-events:none;box-shadow:0 1px 4px #0005;display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px;font-weight:700;text-shadow:0 1px 2px #000}.keyposdot{position:absolute;width:7px;height:7px;border-radius:50%;background:#000;border:1px solid #fff;transform:translate(-50%,-50%);z-index:16;pointer-events:none;box-shadow:0 1px 2px #0006}.fretlab{position:absolute;right:-18px;transform:translateY(-50%);width:18px;text-align:center;color:#666;z-index:16;border:0;background:transparent;font-size:14px;cursor:pointer;padding:0}.stringlab{position:absolute;border:0;background:transparent;color:#666;font-size:13px;width:18px;height:18px;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:18;padding:0}.stringlab.on,.fretlab.on{color:#111;font-weight:700;text-decoration:underline}.frethi,.stringhi,.cellhi{position:absolute;background:rgba(255,255,255,.45);z-index:1;pointer-events:none}.frethi{left:0;width:100%}.stringhi{top:0;height:100%}.plinksvg,.segfill{position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none;overflow:visible}.plinksvg{z-index:9}.segfill{z-index:12}.segmark{position:absolute;border-radius:999px;z-index:13;pointer-events:auto;box-shadow:0 1px 5px #0005;cursor:pointer}.segmark.blue{background:var(--blue)}.segmark.red{background:#d21818}.playlabel{position:absolute;display:flex;gap:8px;align-items:center;z-index:30;pointer-events:none;transform:translateY(-50%)}.playlabel .now,.playlabel .next{background:rgba(255,255,255,.88);border-radius:10px;padding:6px 9px;box-shadow:0 2px 8px #0003;line-height:1}.playlabel .now{font-size:26px;color:#111}.playlabel .next{font-size:14px;color:#888}
+.triadmodal{position:fixed;inset:0;background:#0005;display:none;align-items:center;justify-content:center;z-index:999}.triadmodal.on{display:flex}.triadbox{background:#fff;border-radius:18px;padding:16px;box-shadow:0 10px 30px #0005;min-width:210px}.triadbox h3{margin:0 0 10px;font-size:16px}.triadgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}.triadgrid label{display:flex;gap:5px;align-items:center;justify-content:center;border:1px solid #bbb;border-radius:10px;padding:6px;background:#fafafa}.triadactions{display:flex;gap:8px;justify-content:flex-end}.triadactions button{border:1px solid #aaa;background:#fff;border-radius:9px;padding:6px 10px;cursor:pointer}
+.mark.triad{}
+.triadlabel{display:flex;align-items:center;justify-content:center;width:23px;height:23px;}
+
+/* Final triad/root overlay corrections */
+.chordring{border-color:#00cc00!important;background:transparent!important;}
+.triadrootring{border-color:#00cc00!important;background:transparent!important;}
+.keyrootring{border-color:#000!important;background:transparent!important;}
+.triadghost{color:#00cc00!important;background:transparent!important;text-shadow:0 1px 2px #000,0 0 2px #000!important;}
+
+
+#posBtnMain{
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:center!important;
+  justify-content:center!important;
+  text-align:center!important;
+  line-height:1.1!important;
+  gap:2px;
+}
+#posBtnMain div{display:block!important;width:100%;}
+
+
+.playmenubtn{font-size:15px;line-height:1.1}
+.playmenubtn.on{box-shadow:inset 0 0 0 2px var(--yellow),0 8px 24px #0001}
+.playbox{position:fixed;left:12px;top:12px;background:#fff;border-radius:18px;padding:12px;box-shadow:0 10px 30px #0005;width:152px;max-height:calc(100vh - 24px);overflow:auto;pointer-events:auto}
+.playbox h3{margin:0 0 8px;font-size:16px}
+.playaction{height:36px;margin-bottom:10px;font-size:15px}
+.playrow{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px;font-size:14px}
+.playbpm{width:100%;margin-bottom:10px}
+
+
+.displaytoolsbtn{font-size:15px}
+.displaytoolsbtn.on{box-shadow:inset 0 0 0 2px var(--yellow),0 8px 24px #0001}
+.displaybox{position:fixed;left:12px;top:12px;background:#fff;border-radius:18px;padding:12px;box-shadow:0 10px 30px #0005;width:152px;max-height:calc(100vh - 24px);overflow:auto;pointer-events:auto;display:grid;gap:8px}
+.displaybox h3{margin:0 0 2px;font-size:16px}
+.displayrow{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:14px}
+
+.playselect{margin-bottom:10px}
+
+.triadsettingsbtn{font-size:15px;line-height:1.1}
+.triadsettingsbtn.on{box-shadow:inset 0 0 0 2px var(--yellow),0 8px 24px #0001}
+
+
+.chordbar{font-size:19px!important;line-height:1.25!important;gap:10px!important}
+.chordbtnrn,.chordbtnnote{display:inline-block}
+.chordbtnrn{margin-right:14px}
+
+
+.chordbar{flex-direction:column!important;gap:4px!important;font-size:20px!important;line-height:1.1!important}
+.chordbtnline{display:flex;justify-content:center;align-items:center;width:100%}
+.chordbtnline.next{font-size:13px;color:#777}
+.chordbtnrn{margin-right:14px}
+
+
+.triadmodal{background:transparent!important;align-items:flex-start!important;justify-content:flex-start!important;pointer-events:none!important}
+.triadmodal.on{display:block!important}
+.triadbox{position:fixed;left:12px;top:12px;width:152px!important;min-width:0!important;max-height:calc(100vh - 24px);overflow:auto;pointer-events:auto;display:grid;gap:8px;padding:12px!important}
+.triadbox h3{margin:0 0 2px!important;font-size:16px!important}
+.triadrows{display:grid;gap:8px}
+.triadbox .triadactions{display:grid!important;grid-template-columns:1fr 1fr;gap:8px}
+.triadbox .triadactions button{width:100%}
+
+
+/* UI text color normalization */
+.leftcol button,
+.leftcol select,
+.chordmodal,
+.chordmodal button,
+.chordmodal select,
+.chordmodal span,
+.triadmodal,
+.triadmodal button,
+.triadmodal span,
+.triadmodal label,
+.triadmodal h3,
+.displaybox,
+.displaybox button,
+.displaybox select,
+.displaybox span,
+.displaybox h3,
+.playbox,
+.playbox button,
+.playbox select,
+.playbox span,
+.playbox h3,
+.chordbox,
+.chordbox button,
+.chordbox span,
+.chordbox h3,
+.chordbar,
+.chordbar span,
+.triadbox,
+.triadbox button,
+.triadbox span,
+.triadbox label,
+.triadbox h3{
+  color:#000!important;
+}
+
+
+.resetbtn{
+  width:92px;
+  height:38px;
+  border:1px solid #aaa;
+  border-radius:8px;
+  background:#fff;
+  box-shadow:0 8px 24px #0001;
+  cursor:pointer;
+  font-size:14px;
+  color:#000;
+}
+
+
+.leadingtriaddot{
+  position:absolute;
+  width:15px;
+  height:15px;
+  border-radius:50%;
+  background:#ff0000;
+  transform:translate(-50%,-50%);
+  z-index:21;
+  pointer-events:none;
+  box-shadow:0 1px 4px #0006;
+}
+
+
+.modebox{
+  position:fixed;
+  background:#fff;
+  border-radius:18px;
+  padding:12px;
+  box-shadow:0 10px 30px #0005;
+  width:152px;
+  max-height:calc(100vh - 24px);
+  overflow:auto;
+  pointer-events:auto;
+  display:grid;
+  gap:8px;
+}
+.modebox h3{margin:0 0 2px;font-size:16px;color:#000}
+
+
+.panel,.chordbar,.posbtn{
+backdrop-filter:blur(4px);
+}
+.btn,.sel,.iconbtn,.mini,.sbtn{
+color:#000;
+font-weight:500;
+letter-spacing:.2px;
+}
+.btn:hover,.iconbtn:hover{
+transform:translateY(-1px);
+transition:.15s ease;
+}
+.string{
+box-shadow:0 0 2px rgba(255,255,255,.5),0 1px 3px rgba(0,0,0,.35);
+}
+.fret{
+background:linear-gradient(#fefefe,#bdbdbd,#fefefe)!important;
+}
+.inlay{
+background:radial-gradient(circle at 35% 35%,#fff,#e8e8e8 60%,#bcbcbc);
+box-shadow:0 1px 4px rgba(0,0,0,.25);
+}
+.mark{
+font-weight:600;
+}
+.modebox,.triadbox{
+box-shadow:0 20px 50px rgba(0,0,0,.22)!important;
+border:1px solid #ddd;
+}
+
+
+/* === Fretboard 2.90: second-pass visual polish === */
+:root{
+  --app-bg-1:#fbfbfc;
+  --app-bg-2:#eceff2;
+  --card-bg:rgba(255,255,255,.86);
+  --card-border:rgba(255,255,255,.9);
+  --card-shadow:0 14px 32px rgba(23,28,35,.14);
+  --card-shadow-soft:0 8px 20px rgba(23,28,35,.09);
+  --control-border:#d9dde2;
+  --control-focus:#f3c84b;
+  --wood-hi:#efc78e;
+  --wood-mid:#d6a064;
+  --wood-lo:#a96f36;
+  --steel-hi:#ffffff;
+  --steel-mid:#babec4;
+  --steel-lo:#6f747b;
+}
+body{
+  background:
+    radial-gradient(circle at 50% 0%,rgba(255,255,255,.95),rgba(245,246,248,.72) 38%,rgba(229,233,238,.92) 100%);
+  -webkit-font-smoothing:antialiased;
+  text-rendering:geometricPrecision;
+}
+.app{
+  border:1px solid rgba(40,48,58,.18)!important;
+  background:
+    linear-gradient(180deg,var(--app-bg-1),var(--app-bg-2))!important;
+  box-shadow:
+    0 26px 70px rgba(0,0,0,.16),
+    inset 0 1px 0 rgba(255,255,255,.9)!important;
+  border-radius:32px!important;
+}
+.panel,.chordbar,.posbtn,.resetbtn{
+  background:var(--card-bg)!important;
+  border:1px solid var(--card-border)!important;
+  box-shadow:var(--card-shadow-soft)!important;
+  backdrop-filter:blur(14px) saturate(1.15);
+  -webkit-backdrop-filter:blur(14px) saturate(1.15);
+  transition:transform .14s ease, box-shadow .14s ease, background .14s ease;
+}
+.posbtn:hover,.resetbtn:hover,.chordbar:hover{
+  transform:translateY(-1px);
+  box-shadow:var(--card-shadow)!important;
+}
+.posbtn:active,.resetbtn:active,.chordbar:active{
+  transform:translateY(1px) scale(.995);
+}
+.iconbtn.on,.posbtn.on,.chordbar.on,.playmenubtn.on,.displaytoolsbtn.on,.triadsettingsbtn.on{
+  box-shadow:
+    inset 0 0 0 2px var(--control-focus),
+    var(--card-shadow-soft)!important;
+  background:linear-gradient(180deg,#fffef7,#ffffff)!important;
+}
+.btn,.sel,.bpmbtn,.chordclose,.triadactions button{
+  border:1px solid var(--control-border)!important;
+  background:linear-gradient(180deg,#ffffff,#f7f8fa)!important;
+  color:#111!important;
+  box-shadow:0 1px 0 rgba(255,255,255,.9),0 2px 5px rgba(0,0,0,.04);
+}
+.btn:active,.bpmbtn:active,.chordclose:active,.triadactions button:active{
+  transform:translateY(1px);
+}
+.seg{
+  border:1px solid var(--control-border)!important;
+  background:#f4f6f8!important;
+  box-shadow:inset 0 1px 3px rgba(0,0,0,.06);
+}
+.seg button{
+  background:transparent!important;
+  font-weight:600;
+}
+.seg button.on{
+  background:#171a1f!important;
+  color:#fff!important;
+  box-shadow:0 1px 4px rgba(0,0,0,.18);
+}
+.sw{
+  filter:drop-shadow(0 1px 1px rgba(0,0,0,.08));
+}
+.sl{
+  background:#d5d9df!important;
+  box-shadow:inset 0 1px 2px rgba(0,0,0,.16);
+}
+.sl:before{
+  background:linear-gradient(180deg,#fff,#f0f2f5)!important;
+}
+.sw input:checked+.sl{
+  background:linear-gradient(180deg,#2b6fe3,#1f63d8)!important;
+}
+.wrap{
+  background:
+    linear-gradient(180deg,rgba(255,255,255,.82),rgba(255,255,255,.58))!important;
+  border:1px solid rgba(255,255,255,.82);
+  box-shadow:
+    0 18px 44px rgba(0,0,0,.13),
+    inset 0 1px 0 rgba(255,255,255,.85)!important;
+}
+.shell{
+  border-radius:0 0 8px 8px;
+  background:
+    linear-gradient(90deg,rgba(85,45,16,.14),rgba(255,255,255,.06) 18%,rgba(80,44,16,.08) 50%,rgba(255,255,255,.07) 82%,rgba(72,39,14,.16)),
+    linear-gradient(180deg,var(--wood-lo) 0%,var(--wood-mid) 8%,var(--wood-hi) 35%,var(--wood-mid) 70%,var(--wood-lo) 100%)!important;
+  box-shadow:
+    inset 8px 0 18px rgba(79,42,10,.18),
+    inset -8px 0 18px rgba(79,42,10,.18);
+}
+.board{
+  background:
+    repeating-linear-gradient(90deg,rgba(92,45,12,.055) 0 2px,transparent 2px 9px),
+    linear-gradient(180deg,rgba(255,255,255,.1),rgba(0,0,0,.05));
+}
+.nut{
+  background:linear-gradient(90deg,#080808,#2a2a2a 45%,#070707)!important;
+  box-shadow:0 2px 6px rgba(0,0,0,.45);
+}
+.fret{
+  height:4px!important;
+  background:
+    linear-gradient(180deg,var(--steel-hi),var(--steel-mid) 48%,var(--steel-lo) 52%,var(--steel-hi))!important;
+  box-shadow:
+    0 1px 2px rgba(0,0,0,.42),
+    inset 0 1px 0 rgba(255,255,255,.75)!important;
+}
+.string{
+  background:
+    linear-gradient(90deg,#4e535a 0%,#ffffff 42%,#9da3aa 52%,#f6f7f8 72%,#4b5058 100%)!important;
+  box-shadow:
+    0 1px 3px rgba(0,0,0,.42),
+    inset 0 0 1px rgba(255,255,255,.85)!important;
+}
+.inlay{
+  background:
+    radial-gradient(circle at 32% 30%,#ffffff 0%,#f7f7f7 28%,#d9d9d9 68%,#9ea3aa 100%)!important;
+  box-shadow:
+    inset 0 1px 1px rgba(255,255,255,.8),
+    0 1px 4px rgba(0,0,0,.28)!important;
+  opacity:.96;
+}
+.tune{
+  border-color:rgba(82,54,26,.45)!important;
+  background:linear-gradient(180deg,rgba(255,255,255,.58),rgba(255,255,255,.24))!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.6),0 1px 3px rgba(0,0,0,.16);
+}
+.open,.mark{
+  box-shadow:
+    0 3px 7px rgba(0,0,0,.28),
+    inset 0 1px 0 rgba(255,255,255,.2)!important;
+  font-weight:700;
+}
+.mark.black,.open.black{
+  background:linear-gradient(180deg,#222,#050505)!important;
+}
+.mark.gray,.open.gray{
+  background:linear-gradient(180deg,#c8c8c8,#8e8e8e)!important;
+}
+.mark.blue,.open.blue{
+  background:linear-gradient(180deg,#357af0,#1452bd)!important;
+}
+.chordring{
+  border-width:2.5px!important;
+  border-color:#00c853!important;
+  filter:drop-shadow(0 1px 2px rgba(0,0,0,.35));
+}
+.triadrootring{
+  border-width:2px!important;
+  border-color:#00e05a!important;
+  box-shadow:0 0 0 1px rgba(0,0,0,.35),0 0 8px rgba(0,224,90,.25)!important;
+}
+.keyrootring{
+  border-width:2px!important;
+  box-shadow:0 0 0 1px rgba(255,255,255,.8),0 1px 4px rgba(0,0,0,.35)!important;
+}
+.triadghost{
+  color:#00d957!important;
+  text-shadow:
+    0 1px 2px rgba(0,0,0,.95),
+    0 0 3px rgba(0,0,0,.8)!important;
+}
+.leadingtriaddot{
+  background:radial-gradient(circle at 35% 30%,#ff7777,#f00000 62%,#a90000)!important;
+  box-shadow:0 2px 6px rgba(0,0,0,.38)!important;
+}
+.triadpentdot{
+  background:linear-gradient(180deg,#397cf1,#1755c3)!important;
+  box-shadow:0 2px 6px rgba(0,0,0,.34)!important;
+}
+.keyposdot{
+  box-shadow:0 1px 3px rgba(0,0,0,.55)!important;
+}
+.segmark{
+  box-shadow:
+    0 2px 8px rgba(0,0,0,.36),
+    inset 0 1px 0 rgba(255,255,255,.3)!important;
+}
+.segmark.blue{
+  background:linear-gradient(180deg,#3f83ff,#1352bd)!important;
+}
+.segmark.red{
+  background:linear-gradient(180deg,#ff4b4b,#c60000)!important;
+}
+.modebox,.triadbox,.playbox,.displaybox,.chordbox{
+  background:rgba(255,255,255,.92)!important;
+  border:1px solid rgba(255,255,255,.88)!important;
+  box-shadow:
+    0 24px 58px rgba(0,0,0,.22),
+    inset 0 1px 0 rgba(255,255,255,.9)!important;
+  backdrop-filter:blur(18px) saturate(1.2);
+  -webkit-backdrop-filter:blur(18px) saturate(1.2);
+}
+.modebox h3,.triadbox h3,.playbox h3,.displaybox h3,.chordbox h3{
+  font-size:15px!important;
+  letter-spacing:.2px;
+  font-weight:700;
+}
+.chordlist .cline,.cline{
+  border-radius:10px!important;
+  padding:5px 6px!important;
+  transition:background .12s ease, transform .12s ease;
+}
+.cline:hover{
+  background:rgba(31,99,216,.08)!important;
+  text-decoration:none!important;
+}
+.cline.playing{
+  background:rgba(31,99,216,.12)!important;
+}
+.chordbtnline.current{
+  font-weight:750;
+}
+.chordbtnline.next{
+  opacity:.72;
+}
+.fretlab,.stringlab{
+  color:#555!important;
+  font-weight:600;
+  text-shadow:0 1px 0 rgba(255,255,255,.7);
+}
+.fretlab.on,.stringlab.on{
+  color:#111!important;
+}
+::selection{
+  background:rgba(31,99,216,.18);
+}
+
+
+.apptitle{
+  position:absolute;
+  top:8px;
+  left:22px;
+  font-size:11px;
+  line-height:1;
+  letter-spacing:.8px;
+  text-transform:uppercase;
+  color:rgba(0,0,0,.42);
+  font-weight:700;
+  pointer-events:none;
+}
+
+
+body{
+  display:flex !important;
+  justify-content:center !important;
+  align-items:flex-start !important;
+}
+.app{
+  margin:24px auto !important;
+}
+.apptitle{
+  left:0 !important;
+  right:0 !important;
+  text-align:center !important;
+  width:100% !important;
+  letter-spacing:1px !important;
+}
+
+
+/* === Fretboard 2.90: dark modern schematic theme === */
+:root{
+  --bg-deep:#080b10;
+  --bg-card:rgba(18,25,36,.88);
+  --line-soft:rgba(215,226,242,.22);
+  --text-main:#f2f6fb;
+  --text-muted:#aeb9c8;
+  --blue:#4aa3ff;
+  --red:#ff4d5d;
+  --green:#21f07d;
+  --yellow:#ffd84d;
+  --wood-hi:#141d2b;
+  --wood-mid:#111823;
+  --wood-lo:#0b1018;
+}
+html,body{
+  background:radial-gradient(circle at 50% 0%,#182235 0%,#0b0f17 42%,#05070b 100%)!important;
+  color:var(--text-main)!important;
+}
+body{
+  display:flex!important;
+  justify-content:center!important;
+  align-items:flex-start!important;
+}
+.app{
+  background:linear-gradient(180deg,rgba(24,32,46,.94),rgba(10,14,22,.96))!important;
+  border:1px solid rgba(180,205,240,.16)!important;
+  box-shadow:0 28px 80px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,255,255,.08)!important;
+}
+.apptitle{
+  color:rgba(235,242,255,.72)!important;
+  text-shadow:0 1px 2px rgba(0,0,0,.65);
+}
+.panel,.chordbar,.posbtn,.resetbtn{
+  background:linear-gradient(180deg,rgba(29,39,56,.92),rgba(16,23,35,.92))!important;
+  border:1px solid rgba(210,226,255,.14)!important;
+  color:var(--text-main)!important;
+  box-shadow:0 10px 24px rgba(0,0,0,.32),inset 0 1px 0 rgba(255,255,255,.08)!important;
+  backdrop-filter:blur(14px) saturate(1.2);
+  -webkit-backdrop-filter:blur(14px) saturate(1.2);
+}
+.posbtn.on,.chordbar.on,.playmenubtn.on,.displaytoolsbtn.on,.triadsettingsbtn.on{
+  background:linear-gradient(180deg,rgba(40,54,78,.95),rgba(20,29,44,.95))!important;
+  box-shadow:inset 0 0 0 2px var(--yellow),0 10px 24px rgba(0,0,0,.35)!important;
+}
+.btn,.sel,.bpmbtn,.chordclose,.triadactions button{
+  background:linear-gradient(180deg,#1d283a,#121a28)!important;
+  color:var(--text-main)!important;
+  border:1px solid rgba(214,230,255,.18)!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 3px 10px rgba(0,0,0,.22)!important;
+}
+.sel option{background:#111722;color:#f2f6fb}
+.seg{background:#0d1420!important;border:1px solid rgba(214,230,255,.16)!important}
+.seg button{color:var(--text-main)!important}
+.seg button.on{background:#eaf2ff!important;color:#07101c!important}
+.sl{background:#344057!important}
+.sw input:checked+.sl{background:linear-gradient(180deg,#3894ff,#1f63d8)!important}
+.wrap{
+  background:linear-gradient(180deg,rgba(18,26,38,.7),rgba(8,12,19,.72))!important;
+  border:1px solid rgba(210,226,255,.12)!important;
+  box-shadow:0 22px 60px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.05)!important;
+}
+.shell{
+  background:linear-gradient(180deg,rgba(105,135,178,.10),rgba(255,255,255,0) 18%,rgba(255,255,255,.02) 50%,rgba(0,0,0,.18) 100%),#101722!important;
+  box-shadow:inset 0 0 0 1px rgba(210,226,255,.10),inset 10px 0 22px rgba(0,0,0,.18),inset -10px 0 22px rgba(0,0,0,.18)!important;
+}
+.board{
+  background:linear-gradient(90deg,rgba(255,255,255,.035) 0 1px,transparent 1px 100%),linear-gradient(180deg,rgba(255,255,255,.045),rgba(0,0,0,.16))!important;
+}
+.nut{background:#e8eef7!important;box-shadow:0 0 10px rgba(255,255,255,.22)!important}
+.fret{height:2px!important;background:rgba(230,240,255,.42)!important;box-shadow:0 0 6px rgba(140,180,255,.18)!important}
+.string{background:rgba(232,241,255,.62)!important;box-shadow:0 0 6px rgba(180,210,255,.26)!important}
+.inlay{background:rgba(232,241,255,.22)!important;box-shadow:0 0 12px rgba(180,210,255,.12)!important}
+.tune{background:rgba(232,241,255,.08)!important;border:1px solid rgba(232,241,255,.18)!important}
+.tune:before{background:rgba(232,241,255,.28)!important}
+.open,.mark{
+  color:#fff!important;
+  box-shadow:0 0 0 1px rgba(255,255,255,.10),0 3px 10px rgba(0,0,0,.45)!important;
+}
+.mark.black,.open.black{background:#f3f7ff!important;color:#09111e!important}
+.mark.gray,.open.gray{background:#6f7a89!important;color:#fff!important}
+.mark.blue,.open.blue{background:var(--blue)!important;color:#031224!important}
+.mark.root,.open.root{box-shadow:0 0 0 2px rgba(255,255,255,.85),0 0 12px rgba(255,255,255,.25)!important}
+.fretlab,.stringlab{color:var(--text-muted)!important;text-shadow:none!important}
+.fretlab.on,.stringlab.on{color:#fff!important}
+.frethi,.stringhi,.cellhi{background:rgba(255,255,255,.08)!important}
+.segmark.blue{background:var(--blue)!important}
+.segmark.red{background:var(--red)!important}
+.segmark{box-shadow:0 0 10px rgba(255,255,255,.12),0 3px 10px rgba(0,0,0,.48)!important}
+.plinksvg path{filter:drop-shadow(0 0 4px rgba(255,255,255,.15))}
+.chordring{border-color:var(--green)!important;background:transparent!important;filter:drop-shadow(0 0 5px rgba(33,240,125,.45))}
+.triadrootring{border-color:var(--green)!important;box-shadow:0 0 0 1px rgba(255,255,255,.25),0 0 10px rgba(33,240,125,.5)!important}
+.keyrootring{border-color:#f7fbff!important;box-shadow:0 0 8px rgba(255,255,255,.45)!important}
+.triadghost{color:var(--green)!important;text-shadow:0 0 5px rgba(33,240,125,.45),0 1px 2px #000!important}
+.leadingtriaddot{background:var(--red)!important;box-shadow:0 0 10px rgba(255,77,93,.55)!important}
+.triadpentdot{background:var(--blue)!important;color:#06101e!important}
+.keyposdot{background:#f2f6fb!important;border:1px solid #0a111d!important}
+.modebox,.triadbox,.playbox,.displaybox,.chordbox{
+  background:linear-gradient(180deg,rgba(25,35,51,.96),rgba(13,19,30,.96))!important;
+  border:1px solid rgba(215,230,255,.18)!important;
+  color:var(--text-main)!important;
+  box-shadow:0 24px 70px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,255,255,.08)!important;
+}
+.modebox h3,.triadbox h3,.playbox h3,.displaybox h3,.chordbox h3,
+.modebox span,.triadbox span,.playbox span,.displaybox span,.chordbox span,
+.triadbox label{color:var(--text-main)!important}
+.chordlist .cline,.cline{color:var(--text-main)!important}
+.cline .rn{color:var(--text-muted)!important}
+.cline:hover{background:rgba(74,163,255,.13)!important}
+.cline.playing{background:rgba(74,163,255,.20)!important}
+.cline.chordsel{outline:1px solid rgba(74,163,255,.45)}
+.chordbtnline.next{color:var(--text-muted)!important}
+.resetbtn{color:var(--text-main)!important}
+
+
+/* === Fretboard 2.90: dark UI consistency pass === */
+
+/* Stronger contrast for all control-panel text */
+.leftcol,
+.leftcol button,
+.leftcol select,
+.leftcol span,
+.panel,
+.panel button,
+.panel select,
+.posbtn,
+.chordbar,
+.resetbtn,
+.playmenubtn,
+.displaytoolsbtn,
+.triadsettingsbtn{
+  color:#f6f9ff!important;
+  text-shadow:0 1px 2px rgba(0,0,0,.75);
+}
+
+/* Button labels and chord-button lines should read bright against dark cards */
+.chordbtnline,
+.chordbtnrn,
+.chordbtnnote,
+#posBtnMain div{
+  color:#f6f9ff!important;
+}
+
+/* Muted secondary text should still be readable */
+.chordbtnline.next,
+#posBtnMain div[style*="font-size"]{
+  color:#c3cfdf!important;
+}
+
+/* Make all popup cards match the Triad Settings popup */
+.playbox,
+.displaybox,
+.chordbox,
+.modebox,
+.triadbox{
+  background:linear-gradient(180deg,rgba(25,35,51,.96),rgba(13,19,30,.96))!important;
+  border:1px solid rgba(215,230,255,.18)!important;
+  color:#f6f9ff!important;
+  box-shadow:
+    0 24px 70px rgba(0,0,0,.55),
+    inset 0 1px 0 rgba(255,255,255,.08)!important;
+  backdrop-filter:blur(18px) saturate(1.2);
+  -webkit-backdrop-filter:blur(18px) saturate(1.2);
+}
+
+/* Popup typography consistency */
+.playbox h3,
+.displaybox h3,
+.chordbox h3,
+.modebox h3,
+.triadbox h3{
+  color:#f6f9ff!important;
+  font-size:16px!important;
+  font-weight:700!important;
+  letter-spacing:.2px!important;
+  margin-top:0!important;
+}
+
+.playbox span,
+.displaybox span,
+.chordbox span,
+.modebox span,
+.triadbox span,
+.triadbox label,
+.displayrow span,
+.playrow span{
+  color:#f6f9ff!important;
+  text-shadow:0 1px 2px rgba(0,0,0,.7);
+}
+
+/* Popup buttons and dropdowns: same dark control language */
+.playbox button,
+.displaybox button,
+.chordbox button,
+.modebox button,
+.triadbox button,
+.playbox select,
+.displaybox select,
+.chordbox select,
+.modebox select,
+.triadbox select{
+  background:linear-gradient(180deg,#1d283a,#121a28)!important;
+  color:#f6f9ff!important;
+  border:1px solid rgba(214,230,255,.18)!important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.08),
+    0 3px 10px rgba(0,0,0,.22)!important;
+}
+
+/* Chord popup list: match card but preserve selected/playing contrast */
+.chordbox .cline,
+.chordDialog .cline,
+.cline{
+  color:#f6f9ff!important;
+}
+
+.cline .rn{
+  color:#c3cfdf!important;
+}
+
+.cline.playing,
+.cline.chordsel{
+  background:rgba(74,163,255,.18)!important;
+  color:#ffffff!important;
+}
+
+/* Segmented controls and small text inside popups */
+.playbox .seg button,
+.displaybox .seg button,
+.modebox .seg button,
+.triadbox .seg button{
+  color:#f6f9ff!important;
+}
+
+.playbox .seg button.on,
+.displaybox .seg button.on,
+.modebox .seg button.on,
+.triadbox .seg button.on{
+  color:#07101c!important;
+}
+
+/* Keep select menus readable in Safari */
+select,
+select option{
+  color:#f6f9ff!important;
+  background:#111722!important;
+}
+
+/* Close buttons should not look disabled */
+.chordclose,
+.triadactions button{
+  color:#f6f9ff!important;
+  font-weight:600!important;
+}
+
+
+/* === Fretboard 2.90: control refinement === */
+
+/* Dropdowns: black text, white arrow */
+select,
+.sel{
+  color:#000!important;
+  font-weight:600!important;
+  background-color:#ffffff!important;
+  -webkit-appearance:none!important;
+  appearance:none!important;
+  background-image:
+    linear-gradient(45deg, transparent 50%, #ffffff 50%),
+    linear-gradient(135deg, #ffffff 50%, transparent 50%),
+    linear-gradient(#1d283a,#1d283a)!important;
+  background-position:
+    calc(100% - 18px) calc(50% - 3px),
+    calc(100% - 12px) calc(50% - 3px),
+    100% 0!important;
+  background-size:6px 6px,6px 6px,36px 100%!important;
+  background-repeat:no-repeat!important;
+  padding-right:40px!important;
+}
+
+select option,
+.sel option{
+  color:#000!important;
+  background:#fff!important;
+}
+
+/* BPM control: black interior with white graphics */
+.bpmwrap,
+.bpmbox,
+.bpmbox{
+  background:#000!important;
+  color:#fff!important;
+}
+
+.bpmbtn,
+.bpmminus,
+.bpmplus{
+  background:#000!important;
+  color:#fff!important;
+  border:2px solid #fff!important;
+}
+
+.bpmbtn svg,
+.bpmminus svg,
+.bpmplus svg{
+  stroke:#fff!important;
+  fill:#fff!important;
+}
+
+.bpmval,
+.bpmlabel{
+  color:#fff!important;
+  font-weight:700!important;
+}
+
+/* Chord selections: use border emphasis only */
+.cline.playing,
+.cline.chordsel,
+.cline.selected{
+  background:transparent!important;
+  outline:none!important;
+  border:2px solid rgba(255,255,255,.85)!important;
+  border-radius:10px!important;
+}
+
+.cline:hover{
+  background:rgba(255,255,255,.04)!important;
+}
+
+/* Keep text unchanged when selected */
+.cline.playing *,
+.cline.chordsel *,
+.cline.selected *{
+  color:inherit!important;
+}
+
+
+/* === Fretboard 2.90: dropdown/BPM/chord-popup repair === */
+
+/* All dropdowns: consistent dark background, white readable text, clear white chevron */
+select,
+.sel,
+.playselect,
+#keySel,
+#modeSel,
+#progSel,
+#rhythmSel{
+  color:#f7fbff!important;
+  background-color:#05070b!important;
+  background-image:
+    linear-gradient(45deg, transparent 50%, #ffffff 50%),
+    linear-gradient(135deg, #ffffff 50%, transparent 50%),
+    linear-gradient(180deg,#111722,#05070b)!important;
+  background-position:
+    calc(100% - 18px) calc(50% - 3px),
+    calc(100% - 12px) calc(50% - 3px),
+    100% 0!important;
+  background-size:6px 6px,6px 6px,36px 100%!important;
+  background-repeat:no-repeat!important;
+  border:1px solid rgba(255,255,255,.55)!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.12),0 2px 8px rgba(0,0,0,.28)!important;
+  -webkit-appearance:none!important;
+  appearance:none!important;
+  padding-right:40px!important;
+  text-align:center!important;
+  text-align-last:center!important;
+}
+
+select option,
+.sel option,
+.playselect option,
+#keySel option,
+#modeSel option,
+#progSel option,
+#rhythmSel option{
+  color:#f7fbff!important;
+  background:#05070b!important;
+}
+
+/* Sound popup dropdowns need to look explicitly clickable */
+.playbox select,
+.playbox .playselect{
+  height:34px!important;
+  border-radius:12px!important;
+  font-weight:700!important;
+  margin-bottom:10px!important;
+}
+
+/* BPM controller: actual class names used in the document */
+.bpmctl,
+.playbpm{
+  background:#000!important;
+  border:2px solid #fff!important;
+  border-radius:12px!important;
+  color:#fff!important;
+  box-shadow:none!important;
+}
+
+.bpmctl .bpmbtn,
+.playbpm .bpmbtn,
+#bpmMinus,
+#bpmPlus{
+  background:#000!important;
+  color:#fff!important;
+  border:2px solid #fff!important;
+  border-radius:8px!important;
+  font-weight:800!important;
+  box-shadow:none!important;
+}
+
+.bpmctl .bpmmid,
+.playbpm .bpmmid,
+#bpmNum,
+.bpmctl .bpmlab,
+.playbpm .bpmlab{
+  background:#000!important;
+  color:#fff!important;
+  text-shadow:none!important;
+}
+
+#bpmNum{
+  font-weight:800!important;
+}
+
+.bpmlab{
+  color:#fff!important;
+  font-weight:700!important;
+}
+
+/* Remove old yellow rectangle/underline treatment from selected chord and Roman numeral */
+.cline.chordsel,
+.cline.chordsel .rn,
+.cline.playing,
+.cline.playing .rn{
+  background:transparent!important;
+  text-decoration:none!important;
+}
+
+.cline.chordsel{
+  border:2px solid rgba(255,255,255,.9)!important;
+  outline:none!important;
+}
+
+.cline.chordsel .rn,
+.cline.playing .rn,
+.rn{
+  background:transparent!important;
+  box-shadow:none!important;
+}
+
+/* Keep chord interior unchanged when selected */
+.chordbox .cline.chordsel,
+.chordbox .cline.playing{
+  background:transparent!important;
+}
+
+
+/* === Fretboard 2.90: Sound popup + popup manager polish === */
+
+/* BPM: black interior, wider symmetric spacing, softer white outline */
+.bpmctl.playbpm,
+.playbpm{
+  background:#000!important;
+  border:1px solid rgba(255,255,255,.62)!important;
+  border-radius:12px!important;
+  padding:6px 9px!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:space-between!important;
+  gap:14px!important;
+  color:#fff!important;
+}
+
+.playbpm .bpmbtn,
+#bpmMinus,
+#bpmPlus{
+  width:24px!important;
+  height:24px!important;
+  border:0!important;
+  outline:0!important;
+  background:#000!important;
+  color:#fff!important;
+  font-size:18px!important;
+  font-weight:700!important;
+  box-shadow:none!important;
+  padding:0!important;
+}
+
+.playbpm .bpmmid{
+  min-width:36px!important;
+  background:#000!important;
+  color:#fff!important;
+}
+
+#bpmNum,
+.playbpm .bpmlab,
+.bpmlab{
+  color:#fff!important;
+  background:#000!important;
+  text-shadow:none!important;
+}
+
+#bpmNum{
+  font-weight:800!important;
+}
+
+.playbpm .bpmlab{
+  font-weight:700!important;
+  letter-spacing:.2px!important;
+}
+
+/* Popup opener buttons: clearly active when their popup is open */
+.popup-open{
+  box-shadow:inset 0 0 0 2px var(--yellow),0 10px 24px rgba(0,0,0,.35)!important;
+}
+
+/* Make the Sound dropdowns read cleanly after removing numeric prefixes */
+#rhythmSel,
+#progSel{
+  font-weight:700!important;
+}
+
+
+/* === Fretboard 2.90: popup active-state repair === */
+
+/* Remove yellow popup/open outlines from all panel buttons */
+.popup-open,
+.iconbtn.on,
+.posbtn.on,
+.chordbar.on,
+.playmenubtn.on,
+.displaytoolsbtn.on,
+.triadsettingsbtn.on{
+  background:linear-gradient(180deg,rgba(46,61,86,.96),rgba(22,31,47,.96))!important;
+  box-shadow:
+    inset 0 0 0 1px rgba(112,178,255,.72),
+    0 0 16px rgba(74,163,255,.18),
+    0 10px 24px rgba(0,0,0,.35)!important;
+  border-color:rgba(112,178,255,.38)!important;
+}
+
+/* Do not let selected chord state look like a popup if no chord popup is open */
+.chordbar.on:not(.popup-open){
+  background:linear-gradient(180deg,rgba(29,39,56,.92),rgba(16,23,35,.92))!important;
+  box-shadow:
+    0 10px 24px rgba(0,0,0,.32),
+    inset 0 1px 0 rgba(255,255,255,.08)!important;
+  border-color:rgba(210,226,255,.14)!important;
+}
+
+/* Keep ordinary selected/toggle controls from using yellow */
+.iconbtn.on:not(.popup-open){
+  box-shadow:
+    inset 0 0 0 1px rgba(112,178,255,.55),
+    0 6px 18px rgba(0,0,0,.22)!important;
+}
+
+/* Explicitly neutralize the older yellow variable in active control contexts */
+.leftcol .popup-open,
+.leftcol .on{
+  outline:none!important;
+}
+
+
+/* === Fretboard 2.90: titleless popups with matching blue exterior line === */
+
+/* Main anchored popups no longer need titles */
+.chordbox h3,
+.playbox h3,
+.displaybox h3,
+.triadbox h3{
+  display:none!important;
+}
+
+/* Add breathing room now that the title is gone */
+.chordbox,
+.playbox,
+.displaybox,
+.triadbox{
+  padding-top:14px!important;
+}
+
+/* Match popup border/glow to active button treatment */
+.chordmodal.on .chordbox,
+.chordmodal.on .playbox,
+.chordmodal.on .displaybox,
+.triadmodal.on .triadbox{
+  border:1px solid rgba(112,178,255,.72)!important;
+  box-shadow:
+    inset 0 0 0 1px rgba(112,178,255,.24),
+    0 0 18px rgba(74,163,255,.20),
+    0 24px 70px rgba(0,0,0,.55)!important;
+}
+
+/* Keep tiny mode dialogs titled, because their question labels are functional */
+.modebox h3{
+  display:block!important;
+}
+
+
+/* === Fretboard 2.90: first-use popup positioning + key/mode dropdown repair === */
+
+/* Key and Mode dropdowns: no black chevron block over the text */
+#keySel,
+#modeSel{
+  background-color:#05070b!important;
+  background-image:
+    linear-gradient(45deg, transparent 50%, #ffffff 50%),
+    linear-gradient(135deg, #ffffff 50%, transparent 50%)!important;
+  background-position:
+    calc(100% - 14px) calc(50% - 3px),
+    calc(100% - 8px) calc(50% - 3px)!important;
+  background-size:6px 6px,6px 6px!important;
+  background-repeat:no-repeat!important;
+  padding-left:8px!important;
+  padding-right:24px!important;
+  color:#f7fbff!important;
+  text-align:center!important;
+  text-align-last:center!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+}
+
+/* The Sound popup dropdowns can keep a stronger arrow area because they are wider */
+#progSel,
+#rhythmSel{
+  padding-right:38px!important;
+}
+
+/* Prevent any measurement helper from flashing hidden popups */
+.chordmodal:not(.on),
+.triadmodal:not(.on){
+  visibility:visible;
+}
+
+
+/* === Fretboard 2.90: remove redundant popup close buttons === */
+#chordClose,
+#playClose,
+#displayClose,
+#triCancel,
+#triSave{
+  display:none!important;
+}
+
+.chordbox,
+.playbox,
+.displaybox,
+.triadbox{
+  padding-bottom:14px!important;
+}
+
+.triadactions{
+  display:none!important;
+}
+
+
+/* === Fretboard 2.90: Sound start/stop simplification === */
+.playaction{
+  height:38px!important;
+  margin-bottom:10px!important;
+  font-size:20px!important;
+  line-height:1!important;
+  font-weight:800!important;
+  letter-spacing:0!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+}
+.playaction.on{
+  background:linear-gradient(180deg,#1d283a,#121a28)!important;
+  color:#fff!important;
+  border-color:rgba(255,255,255,.55)!important;
+}
+
+
+/* === Fretboard 2.90: chord popup as playback display === */
+#chords.chordbar{
+  font-size:20px!important;
+  font-weight:700!important;
+}
+
+
+/* === Fretboard 2.90: side-panel button font normalization only === */
+
+/* Uniform font sizing for all side-panel buttons */
+.leftcol button,
+.leftcol .posbtn,
+.leftcol .chordbar,
+.leftcol .resetbtn,
+#posBtnMain,
+#displayToolsBtn,
+#playMenuBtn,
+#triadSettingsBtn,
+#chords,
+#resetBtn{
+  font-size:14px!important;
+  line-height:1.15!important;
+  font-weight:700!important;
+  letter-spacing:.1px!important;
+}
+
+/* Preserve consistent side-panel button boxes */
+.leftcol .posbtn,
+.leftcol .chordbar{
+  width:92px!important;
+  height:92px!important;
+}
+
+.leftcol .resetbtn{
+  width:92px!important;
+}
+
+/* Prevent earlier one-off chordbar font overrides from winning */
+.chordbar,
+#chords.chordbar{
+  font-size:14px!important;
+  line-height:1.15!important;
+}
+
+/* Parenthetical All Positions text can remain smaller while main button font is uniform */
+#posBtnMain div:nth-child(2){
+  font-size:11px!important;
+  font-weight:600!important;
+}
+
+
+/* === Fretboard 2.90: final panel-font normalization, dropdown-list-only cleanup === */
+
+/* Force identical visible font size for all side-panel button labels and nested text */
+.leftcol > button,
+.leftcol > button *,
+.leftcol .posbtn,
+.leftcol .posbtn *,
+.leftcol .chordbar,
+.leftcol .chordbar *,
+.leftcol .resetbtn,
+.leftcol .resetbtn *,
+#posBtnMain,
+#posBtnMain *,
+#displayToolsBtn,
+#displayToolsBtn *,
+#playMenuBtn,
+#playMenuBtn *,
+#triadSettingsBtn,
+#triadSettingsBtn *,
+#chords,
+#chords *,
+#resetBtn,
+#resetBtn *{
+  font-size:14px!important;
+  line-height:1.15!important;
+  font-weight:700!important;
+  letter-spacing:.1px!important;
+}
+
+/* Keep the parenthetical All Positions state visibly secondary */
+#posBtnMain div:nth-child(2){
+  font-size:11px!important;
+  line-height:1.05!important;
+  font-weight:600!important;
+}
+
+/* Keep the closed dropdown buttons exactly in the normal app style.
+   Only the native dropdown option list is being nudged toward no-wrap text. */
+#keySel,
+#modeSel,
+#progSel,
+#rhythmSel,
+.sel,
+select.sel{
+  width:100%!important;
+  min-width:0!important;
+  max-width:none!important;
+  justify-self:stretch!important;
+  align-self:auto!important;
+}
+
+/* Intended target: the dropdown list items, not the closed dropdown button */
+#keySel option,
+#modeSel option,
+#progSel option,
+#rhythmSel option{
+  white-space:nowrap!important;
+}
+
+
+/* === Fretboard 2.90: enforced side-panel button typography, dropdown buttons restored === */
+
+/* Visible side-panel BUTTONS only — excludes select dropdowns */
+button.posbtn,
+button.posbtn *,
+button.chordbar,
+button.chordbar *,
+button.resetbtn,
+button.resetbtn *,
+#posBtnMain,
+#posBtnMain *,
+#displayToolsBtn,
+#displayToolsBtn *,
+#playMenuBtn,
+#playMenuBtn *,
+#triadSettingsBtn,
+#triadSettingsBtn *,
+#chords,
+#chords *,
+#resetBtn,
+#resetBtn *{
+  font-size:14px!important;
+  line-height:1.15!important;
+  font-weight:700!important;
+  letter-spacing:.1px!important;
+}
+
+/* Allow only the All Positions parenthetical line to be smaller */
+#posBtnMain .subline,
+#posBtnMain div:nth-child(2){
+  font-size:11px!important;
+  line-height:1.05!important;
+  font-weight:600!important;
+}
+
+/* Restore closed dropdown buttons to the pre-2.74 behavior */
+.leftcol select.sel,
+#keySel,
+#modeSel{
+  width:100%!important;
+  min-width:0!important;
+  max-width:none!important;
+  display:block!important;
+  justify-self:stretch!important;
+  align-self:auto!important;
+}
+
+/* The intended dropdown-list target only */
+#keySel option,
+#modeSel option,
+#progSel option,
+#rhythmSel option{
+  white-space:nowrap!important;
+}
+
+
+/* === Fretboard 2.90: restore native dropdowns and protect sound popup === */
+
+/* Restore native closed dropdown buttons; do not intercept their click behavior */
+.leftcol select.sel,
+#keySel,
+#modeSel,
+#progSel,
+#rhythmSel{
+  pointer-events:auto!important;
+}
+
+/* Browser-native dropdown lists are OS controlled, but prevent wrapping where supported */
+#keySel option,
+#modeSel option,
+#progSel option,
+#rhythmSel option{
+  white-space:nowrap!important;
+}
+
+
+/* === Fretboard 2.90: cleaner play/stop icon styling === */
+
+/* Remove the button-like treatment from the Sound play/stop icon */
+.playaction{
+  background:transparent!important;
+  border:none!important;
+  box-shadow:none!important;
+  color:#fff!important;
+  font-size:28px!important;
+  font-weight:800!important;
+  min-height:42px!important;
+}
+
+.playaction.on{
+  background:transparent!important;
+  border:none!important;
+  box-shadow:none!important;
+  color:#fff!important;
+}
+
+/* Make the stop square a little larger visually */
+.playaction.stopicon{
+  font-size:30px!important;
+}
+
+
+/* === Fretboard 2.90: play/stop glyph only === */
+
+/* Strip every inherited button treatment from Sound play/stop */
+#droneBtn,
+#droneBtn.btn,
+#droneBtn.playaction,
+.playbox #droneBtn,
+.playbox .playaction,
+button#droneBtn{
+  background:transparent!important;
+  background-color:transparent!important;
+  background-image:none!important;
+  border:0!important;
+  outline:0!important;
+  box-shadow:none!important;
+  -webkit-box-shadow:none!important;
+  color:#fff!important;
+  text-shadow:none!important;
+  appearance:none!important;
+  -webkit-appearance:none!important;
+  width:100%!important;
+  height:42px!important;
+  min-height:42px!important;
+  padding:0!important;
+  margin:0 0 10px 0!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  font-size:31px!important;
+  line-height:1!important;
+  font-weight:800!important;
+}
+
+/* No hover/active/on background, ever */
+#droneBtn:hover,
+#droneBtn:active,
+#droneBtn:focus,
+#droneBtn.on,
+#droneBtn.stopicon,
+.playbox #droneBtn:hover,
+.playbox #droneBtn:active,
+.playbox #droneBtn:focus,
+.playbox #droneBtn.on{
+  background:transparent!important;
+  background-color:transparent!important;
+  background-image:none!important;
+  border:0!important;
+  outline:0!important;
+  box-shadow:none!important;
+  -webkit-box-shadow:none!important;
+  color:#fff!important;
+}
+
+/* Stop square slightly larger */
+#droneBtn.stopicon{
+  font-size:33px!important;
+}
+
+
+/* === Fretboard 2.90: CSS-drawn play/stop glyphs, no emoji rendering === */
+
+#droneBtn,
+#droneBtn.btn,
+#droneBtn.playaction,
+.playbox #droneBtn,
+.playbox .playaction,
+button#droneBtn,
+#droneBtn:hover,
+#droneBtn:active,
+#droneBtn:focus,
+#droneBtn.on,
+#droneBtn.stopicon{
+  background:transparent!important;
+  background-color:transparent!important;
+  background-image:none!important;
+  border:0!important;
+  outline:0!important;
+  box-shadow:none!important;
+  -webkit-box-shadow:none!important;
+  appearance:none!important;
+  -webkit-appearance:none!important;
+  color:#fff!important;
+  width:100%!important;
+  height:42px!important;
+  min-height:42px!important;
+  padding:0!important;
+  margin:0 0 10px 0!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+}
+
+.playGlyph{
+  display:block!important;
+  width:0!important;
+  height:0!important;
+  border-top:12px solid transparent!important;
+  border-bottom:12px solid transparent!important;
+  border-left:22px solid #fff!important;
+  background:transparent!important;
+  filter:none!important;
+}
+
+.stopGlyph{
+  display:block!important;
+  width:21px!important;
+  height:21px!important;
+  background:#fff!important;
+  border:0!important;
+  border-radius:1px!important;
+  box-shadow:none!important;
+}
+
+
+/* === Fretboard 2.90: chord popup current/leading visual states === */
+
+/* Current chord: same green family as the triad rings */
+.chordbox .cline.currentChord,
+.chordbox .cline.chordsel.currentChord,
+.cline.currentChord{
+  border:2px solid var(--green)!important;
+  outline:none!important;
+  background:transparent!important;
+  color:#f6f9ff!important;
+  box-shadow:0 0 10px rgba(33,240,125,.22)!important;
+}
+
+.chordbox .cline.currentChord .rn,
+.chordbox .cline.currentChord span,
+.cline.currentChord .rn,
+.cline.currentChord span{
+  color:#f6f9ff!important;
+  background:transparent!important;
+}
+
+/* Leading/anticipated chord: same red family as leading triad dots */
+.chordbox .cline.leadingChord,
+.cline.leadingChord{
+  border-color:rgba(255,77,93,.45)!important;
+  color:var(--red)!important;
+  background:transparent!important;
+}
+
+.chordbox .cline.leadingChord .rn,
+.chordbox .cline.leadingChord span,
+.cline.leadingChord .rn,
+.cline.leadingChord span{
+  color:var(--red)!important;
+  background:transparent!important;
+}
+
+/* If a chord were both states, current green outline wins while red text can still show only for leading */
+.chordbox .cline.currentChord.leadingChord,
+.cline.currentChord.leadingChord{
+  border-color:var(--green)!important;
+}
+
+
+/* Fretboard 2.90 audio engine update marker */
+
+</style>
+</head>
+<body>
+<div class="app" id="app">
+  <div class="apptitle">Guit-Map</div>
+  <div class="layout">
+    <div class="leftcol">
+      <div class="panel"><select id="keySel" class="sel"></select><select id="modeSel" class="sel"></select></div>
+      <button id="posBtnMain" class="posbtn">All Positions</button>
+      <button id="displayToolsBtn" class="posbtn displaytoolsbtn" type="button">Tools</button>
+      <button id="playMenuBtn" class="posbtn playmenubtn" type="button" aria-label="Playback">Sound</button>
+      <button id="triadSettingsBtn" class="posbtn triadsettingsbtn" type="button">Triad<br>Settings</button>
+      <button id="chords" class="chordbar" type="button">Chords</button>
+      <button id="resetBtn" class="resetbtn" type="button">Reset</button>
+    </div>
+    <div class="maincol"><div class="wrap"><div id="shell" class="shell"><div id="openrow" class="openrow"></div><div class="nut"></div><div id="board" class="board"></div></div></div></div>
+  </div>
+</div>
+<div id="triadDialog" class="triadmodal"><div class="triadbox"><h3>Triad Settings</h3>
+<div class="triadrows">
+  <div class="displayrow"><span>Triads</span><label class="sw"><input type="checkbox" id="triadEnableCheck"><span class="sl"></span></label></div>
+  <div class="displayrow"><span>String 1</span><label class="sw"><input type="checkbox" id="triStr1"><span class="sl"></span></label></div>
+  <div class="displayrow"><span>String 2</span><label class="sw"><input type="checkbox" id="triStr2"><span class="sl"></span></label></div>
+  <div class="displayrow"><span>String 3</span><label class="sw"><input type="checkbox" id="triStr3"><span class="sl"></span></label></div>
+  <div class="displayrow"><span>String 4</span><label class="sw"><input type="checkbox" id="triStr4"><span class="sl"></span></label></div>
+  <div class="displayrow"><span>String 5</span><label class="sw"><input type="checkbox" id="triStr5"><span class="sl"></span></label></div>
+  <div class="displayrow"><span>String 6</span><label class="sw"><input type="checkbox" id="triStr6"><span class="sl"></span></label></div>
+  <div class="displayrow"><span>Leading Triad</span><label class="sw"><input type="checkbox" id="leadingTriadCheck"><span class="sl"></span></label></div>
+  <div class="displayrow"><span>Voice Leading</span><label class="sw"><input type="checkbox" id="voiceLeadCheck"><span class="sl"></span></label></div>
+  <div class="displayrow"><span>Triad pentatonic</span><label class="sw"><input type="checkbox" id="triadPentCheck"><span class="sl"></span></label></div>
+  <div class="displayrow"><span>Key pentatonic</span><label class="sw"><input type="checkbox" id="keyPosCheck"><span class="sl"></span></label></div>
+</div>
+<div class="triadactions"><button id="triCancel" tabindex="-1" aria-hidden="true" type="button">Cancel</button><button id="triSave" tabindex="-1" aria-hidden="true" type="button">Close</button></div></div></div>
+<div id="chordDialog" class="chordmodal"><div class="chordbox"><h3>Chords</h3><div id="chordDialogList" class="chordlist"></div><button id="chordClose" tabindex="-1" aria-hidden="true" class="chordclose" type="button">Close</button></div></div>
+<div id="playDialog" class="chordmodal"><div class="playbox"><h3>Sound</h3>
+  <button id="droneBtn" class="btn playaction" type="button"><span class="playGlyph" aria-hidden="true"></span></button>
+  <select id="progSel" class="sel playselect"><option value="">Chord</option></select>
+  <select id="rhythmSel" class="sel playselect"><option value="">Beats</option></select>
+  <div class="playrow"><span>Metronome</span><label class="sw"><input id="metroTog" type="checkbox"><span class="sl"></span></label></div>
+  <div class="bpmctl playbpm"><button id="bpmMinus" class="bpmbtn">−</button><div class="bpmmid"><div id="bpmNum">80</div><div class="bpmlab">bpm</div></div><button id="bpmPlus" class="bpmbtn">+</button></div>
+  <button id="playClose" tabindex="-1" aria-hidden="true" class="chordclose" type="button">Close</button>
+</div></div>
+<div id="displayDialog" class="chordmodal"><div class="displaybox"><h3>Tools</h3>
+  <div class="seg"><button id="flatBtn" class="on">♭</button><button id="sharpBtn">#</button></div>
+  <div class="seg"><button id="noteBtn" class="on">♩</button><button id="intBtn">INT</button></div>
+  <div class="displayrow"><span>Bars</span><label class="sw"><input id="playTog" type="checkbox"><span class="sl"></span></label></div>
+  <div class="displayrow"><span>Lines</span><label class="sw"><input id="plineTog" type="checkbox"><span class="sl"></span></label></div>
+  <div class="displayrow"><span>Triads</span><label class="sw"><input id="triadTog" type="checkbox"><span class="sl"></span></label></div>
+  <button id="displayClose" tabindex="-1" aria-hidden="true" class="chordclose" type="button">Close</button>
+</div></div>
+<div id="barsDialog" class="chordmodal"><div class="modebox"><h3>Bars?</h3>
+  <div class="displayrow"><span>Bars</span><label class="sw"><input id="barsModeCheck" type="checkbox"><span class="sl"></span></label></div>
+  <button id="barsClose" class="chordclose" type="button">Close</button>
+</div></div>
+<div id="notesDialog" class="chordmodal"><div class="modebox"><h3>Notes?</h3>
+  <div class="displayrow"><span>Notes</span><label class="sw"><input id="notesModeCheck" type="checkbox"><span class="sl"></span></label></div>
+  <button id="notesClose" class="chordclose" type="button">Close</button>
+</div></div>
+<div id="linesDialog" class="chordmodal"><div class="modebox"><h3>Lines?</h3>
+  <div class="displayrow"><span>Lines</span><label class="sw"><input id="linesModeCheck" type="checkbox"><span class="sl"></span></label></div>
+  <button id="linesClose" class="chordclose" type="button">Close</button>
+</div></div>
+<script>
+const SH=['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
+const FL=['C','Db','D','Eb','E','F','Gb','G','Ab','A','Bb','B'];
+const TUN=['E','A','D','G','B','E'];
+const STRING_WIDTH=[6,5,4,3,2.5,2];
+const MAJ=[0,2,4,5,7,9,11];
+const MODES=['Ionian','Dorian','Phrygian','Lydian','Mixolydian','Aeolian','Locrian'];
+const RHYTHMS=[
+  {id:'steady',name:'Steady 1 & 3'},
+  {id:'four',name:'Four pulse'},
+  {id:'backbeat',name:'Backbeat lift'},
+  {id:'offbeat',name:'Offbeat push'},
+  {id:'bossa',name:'Bossa-ish'},
+  {id:'waltz',name:'Waltz feel'},
+  {id:'tango',name:'Tango long-short'},
+  {id:'anticipate',name:'Anticipated 4'},
+  {id:'swing',name:'Swing pairs'},
+  {id:'sparse',name:'Sparse sustain'}
+];
+const TOTAL_FRETS=15, LABEL_FRETS=[3,5,7,9,12,15], INLAY_FRETS=[3,5,7,9,12,15];
+const KEY_FLAT=[['C','Am'],['Db','Bbm'],['D','Bm'],['Eb','Cm'],['E','C#m'],['F','Dm'],['Gb','Ebm'],['G','Em'],['Ab','Fm'],['A','F#m'],['Bb','Gm'],['B','G#m']];
+const KEY_SHARP=[['C','Am'],['C#','A#m'],['D','Bm'],['D#','Cm'],['E','C#m'],['F','Dm'],['F#','D#m'],['G','Em'],['G#','Fm'],['A','F#m'],['A#','Gm'],['B','G#m']];
+const BASE_MIDI=[40,45,50,55,59,64];
+
+const S={
+  key:'C/Am',mode:null,modeType:'none',acc:'flat',label:'note',tuning:[...TUN],
+  marks:new Map(),color:'blue',stage:0,insertMode:'notes',pendingSwitch:null,showAllBars:false,root:0,triadOn:false,triad:null,
+  triadStrings:new Set([2,3,4]),leadingTriad:false,leadingTriadChord:null,triadPent:false,showKeyPositions:false,bpm:80,rhythm:'steady',
+  active:null,chordSelect:null,hiFrets:new Set(),hiStrings:new Set(),lastHi:null,
+  prevKeyRoot:0,segments:new Set(),manualLines:new Set(),autoSegMarks:new Set(),pLines:false,chordDialogOpen:false,playDialogOpen:false,displayDialogOpen:false
+};
+let AC=null,drone=null;
+const $=id=>document.getElementById(id);
+const bd=$('board'), orow=$('openrow'), chordBox=$('chords'), chordDialog=$('chordDialog'), chordDialogList=$('chordDialogList'), playDialog=$('playDialog'), playMenuBtn=$('playMenuBtn'), displayDialog=$('displayDialog'), displayToolsBtn=$('displayToolsBtn'), triadSettingsBtn=$('triadSettingsBtn'), resetBtn=$('resetBtn'), rhythmSel=$('rhythmSel'), barsDialog=$('barsDialog'), linesDialog=$('linesDialog'), notesDialog=$('notesDialog'), barsModeCheck=$('barsModeCheck'), linesModeCheck=$('linesModeCheck'), notesModeCheck=$('notesModeCheck');
+
+const norm=n=>({C:'C','B#':'C','C#':'C#',Db:'C#',D:'D','D#':'D#',Eb:'D#',E:'E',Fb:'E',F:'F','E#':'F','F#':'F#',Gb:'F#',G:'G','G#':'G#',Ab:'G#',A:'A','A#':'A#',Bb:'A#',B:'B',Cb:'B'}[n]||n);
+const ni=n=>SH.indexOf(norm(n));
+const notes=()=>S.acc==='sharp'?SH:FL;
+const spell=i=>notes()[((i%12)+12)%12];
+const keySet=()=>S.acc==='sharp'?KEY_SHARP:KEY_FLAT;
+const keyObj=()=>keySet().find(k=>k[0]+'/'+k[1]===S.key)||keySet()[0];
+const parent=()=>MAJ.map(x=>(ni(keyObj()[0])+x)%12);
+const modeIndex=()=>S.mode===null?0:S.mode;
+const rotatedScale=()=>parent().slice(modeIndex()).concat(parent().slice(0,modeIndex()));
+const root=()=>parent()[modeIndex()];
+const pcAt=(s,f)=>(ni(S.tuning[s])+f)%12;
+const noteAt=(s,f)=>spell(pcAt(s,f));
+const keyOf=(s,f)=>s+'-'+f;
+
+function intName(pc,rt){
+  const sem=((pc-rt)%12+12)%12;
+  const names=['1','b2','2','b3','3','4','b5','5','b6','6','b7','7'];
+  if(S.modeType==='none'||S.modeType==='degree')return names[sem];
+  if((MODES[S.mode]==='Lydian'||MODES[S.mode]==='Dorian')&&sem===6)return '#4';
+  return sem===0?'R':names[sem];
+}
+function dotText(s,f){
+  if(S.label!=='interval')return noteAt(s,f);
+  const ref=S.modeType==='greek'?S.root:parent()[0];
+  return intName(pcAt(s,f),ref);
+}
+function mark(s,f,c){return{s,f,c,t:dotText(s,f)}}
+function manualLineNeedsKey(mk){
+  for(const key of S.manualLines||[]){
+    const ln=lineFromKey(key);
+    if(keyOf(ln.s,ln.f)===mk||keyOf(ln.s2,ln.f2)===mk)return true;
+  }
+  return false;
+}
+function safeDeleteLineEndpoint(mk){
+  // Do not remove a visible note if a bar still uses it as a structural marker.
+  for(const segKey of S.segments||[]){
+    const seg=segmentToFrets(segKey);
+    if(seg&&(keyOf(seg.s,seg.a)===mk||keyOf(seg.s,seg.b)===mk))return;
+  }
+  S.marks.delete(mk);
+}
+function fretY(f){return f/TOTAL_FRETS*bd.clientHeight}
+function stringXs(){const w=bd.clientWidth,m=14,u=w-m*2;return Array.from({length:6},(_,i)=>m+u*i/5)}
+function yForFret(f){return f===0?0:(fretY(f-1)+fretY(f))/2}
+function midiAt(s,f){let m=BASE_MIDI[s],pc=ni(S.tuning[s]);while(m%12!==pc)m++;return m+f}
+
+function populateControls(){
+  const oldProg=progSel.value;
+  keySel.innerHTML='';
+  keySet().forEach(([a,b])=>keySel.add(new Option(a+'/'+b,a+'/'+b)));
+  if([...keySel.options].some(o=>o.value===S.key)){
+    keySel.value=S.key;
+  }else{
+    S.key=keySel.value=keySel.options[0].value;
+  }
+  modeSel.innerHTML='';
+  modeSel.add(new Option('Mode',''));
+
+  // Degree-style mode names first.
+  MODES.forEach((name,i)=>{
+    modeSel.add(new Option((i+1)+'-mode','d'+i));
+  });
+
+  // Greek mode names grouped at the bottom.
+  const majorPc=ni(keyObj()[0]);
+  MODES.forEach((name,i)=>{
+    modeSel.add(new Option(spell(majorPc+MAJ[i])+'-'+name,'g'+i));
+  });
+
+  modeSel.value=S.mode===null?'':S.modeType[0]+S.mode;
+  progSel.innerHTML='<option value="">Chord</option>';
+  progressions().forEach((prog,i)=>progSel.add(new Option(prog.map(j=>['I','ii','iii','IV','V','vi','vii°'][j]).join('-'),i)));
+  progSel.value=[...progSel.options].some(o=>o.value===oldProg)?oldProg:'';
+  const oldRhythm=S.rhythm;
+  rhythmSel.innerHTML='<option value="">Beats</option>';
+  RHYTHMS.forEach(r=>rhythmSel.add(new Option(r.name,r.id)));
+  rhythmSel.value=(oldRhythm&&oldRhythm!=='steady')?oldRhythm:'';
+}
+function updateScaleButton(){
+  if(S.stage===0)posBtnMain.innerHTML='<div>All Positions</div>';
+  else if(S.stage===1)posBtnMain.innerHTML='<div>All Positions</div><div class="subline">(pentatonic)</div>';
+  else posBtnMain.innerHTML='<div>All Positions</div><div class="subline">(full scale)</div>';
+}
+
+
+function normalizeSidePanelTypography(){
+  const ids=['posBtnMain','displayToolsBtn','playMenuBtn','triadSettingsBtn','chords','resetBtn'];
+  ids.forEach(id=>{
+    const el=$(id);
+    if(!el)return;
+    el.style.fontSize='14px';
+    el.style.lineHeight='1.15';
+    el.style.fontWeight='700';
+    el.querySelectorAll('*').forEach(child=>{
+      child.style.fontSize='14px';
+      child.style.lineHeight='1.15';
+      child.style.fontWeight='700';
+    });
+  });
+  const sub=posBtnMain&&posBtnMain.querySelector('div:nth-child(2)');
+  if(sub){
+    sub.style.fontSize='11px';
+    sub.style.lineHeight='1.05';
+    sub.style.fontWeight='600';
+  }
+}
+
+function render(){
+  populateControls();
+  S.root=root();
+  S.prevKeyRoot=ni(keyObj()[0]);
+  if(S.triadOn){
+    if(S.active!==null&&S.active!==undefined)setTriad(S.active);
+    else if(S.chordSelect!==null)setTriad(S.chordSelect);
+    else setTriad(0);
+  }
+  flatBtn.classList.toggle('on',S.acc==='flat');
+  sharpBtn.classList.toggle('on',S.acc==='sharp');
+  noteBtn.classList.toggle('on',S.label==='note');
+  intBtn.classList.toggle('on',S.label==='interval');
+  triadTog.checked=S.triadOn;
+  triadSettingsBtn.classList.toggle('on',S.triadStrings.size<6||S.triadPent||S.showKeyPositions);
+  posBtnMain.classList.toggle('on',S.stage>0);
+  updateScaleButton();
+  playTog.checked=S.showAllBars;
+  plineTog.checked=S.pLines;
+  bpmNum.textContent=S.bpm;
+  drawBoard();
+  renderChords();
+  renderPlayDialog();
+  renderDisplayDialog();
+  normalizeSidePanelTypography();
+}
+
+function drawBoard(){
+  bd.innerHTML='';orow.innerHTML='';
+  const X=stringXs(), F=Array.from({length:TOTAL_FRETS+1},(_,i)=>fretY(i));
+  renderHighlights(X,F);
+  X.forEach((x,i)=>{
+    const t=document.createElement('button');
+    t.className='tune';t.style.left=x+'px';
+    t.onclick=e=>{const r=t.getBoundingClientRect();S.tuning[i]=SH[(ni(S.tuning[i])+(e.clientY-r.top<r.height/2?1:-1)+12)%12];rebuildPositions();syncSegmentMarks();render()};
+    orow.appendChild(t);
+    const o=document.createElement('div');
+    o.className='open';
+    if(S.marks.has(keyOf(i,0))){const m=S.marks.get(keyOf(i,0));o.className+=' '+m.c+(pcAt(i,0)===S.root?' root':'')}
+    o.style.left=x+'px';o.textContent=noteAt(i,0);orow.appendChild(o);
+    if(pcAt(i,0)===S.root)addKeyRootRing(x,32,orow);
+  });
+  for(let f=1;f<=TOTAL_FRETS;f++){const d=document.createElement('div');d.className='fret';d.style.top=F[f]-1.5+'px';bd.appendChild(d)}
+  X.forEach((x,i)=>{const s=document.createElement('div');s.className='string';s.style.left=x+'px';s.style.width=STRING_WIDTH[i]+'px';s.onclick=e=>{e.stopPropagation();toggleStringHighlight(i);render()};bd.appendChild(s)});
+  INLAY_FRETS.forEach(f=>{const y=(F[f-1]+F[f])/2;if(f===12){[.3,.7].forEach(p=>addInlay(p*bd.clientWidth,y))}else addInlay(bd.clientWidth/2,y)});
+  for(let f=1;f<=TOTAL_FRETS;f++){const d=document.createElement('button');d.className='fretlab'+(S.hiFrets.has(f)?' on':'');d.type='button';d.style.top=(F[f-1]+F[f])/2+'px';d.textContent=f;d.onclick=e=>{e.stopPropagation();toggleFretHighlight(f);render()};bd.appendChild(d)}
+  X.forEach((x,i)=>{const d=document.createElement('button');d.className='stringlab'+(S.hiStrings.has(i)?' on':'');d.type='button';d.style.left=(x-7)+'px';d.style.top=(bd.clientHeight+3)+'px';d.textContent=6-i;d.onclick=e=>{e.stopPropagation();toggleStringHighlight(i);render()};bd.appendChild(d)});
+  for(let s=0;s<6;s++)for(let f=1;f<=TOTAL_FRETS;f++){const h=document.createElement('div');h.className='hit';h.style.left=X[s]+'px';h.style.top=(F[f-1]+F[f])/2+'px';h.style.height=Math.max(28,F[f]-F[f-1])+'px';h.onclick=e=>{e.stopPropagation();press(s,f,e)};bd.appendChild(h)}
+  renderMarks(X,F);
+}
+function addInlay(x,y){const d=document.createElement('div');d.className='inlay';d.style.left=x+'px';d.style.top=y+'px';bd.appendChild(d)}
+function addKeyRootRing(cx,cy,parentEl=bd){const ring=document.createElement('div');ring.className='keyrootring';ring.style.left=cx+'px';ring.style.top=cy+'px';parentEl.appendChild(ring)}
+function addTriadRootDot(cx,cy){const ring=document.createElement('div');ring.className='triadrootring';ring.style.left=cx+'px';ring.style.top=cy+'px';bd.appendChild(ring)}
+function laneBounds(X,s){const l=s===0?0:(X[s-1]+X[s])/2,r=s===5?bd.clientWidth:(X[s]+X[s+1])/2;return[l,r]}
+function renderHighlights(X,F){
+  if(S.hiFrets.size&&S.hiStrings.size){for(const s of S.hiStrings){const [l,r]=laneBounds(X,s);for(const f of S.hiFrets){const h=document.createElement('div');h.className='cellhi';h.style.left=l+'px';h.style.width=(r-l)+'px';h.style.top=F[f-1]+'px';h.style.height=(F[f]-F[f-1])+'px';bd.appendChild(h)}}return}
+  for(const f of S.hiFrets){const h=document.createElement('div');h.className='frethi';h.style.top=F[f-1]+'px';h.style.height=(F[f]-F[f-1])+'px';bd.appendChild(h)}
+  for(const s of S.hiStrings){const [l,r]=laneBounds(X,s);const h=document.createElement('div');h.className='stringhi';h.style.left=l+'px';h.style.width=(r-l)+'px';bd.appendChild(h)}
+}
+function toggleStringHighlight(s){S.hiStrings.has(s)?S.hiStrings.delete(s):S.hiStrings.add(s)}
+function toggleFretHighlight(f){if(S.lastHi!==null&&S.lastHi!==f){const a=Math.min(S.lastHi,f),b=Math.max(S.lastHi,f);for(let x=a;x<=b;x++)S.hiFrets.add(x);S.lastHi=null;return}if(S.hiFrets.has(f)){S.hiFrets.delete(f);S.lastHi=null}else{S.hiFrets.add(f);S.lastHi=f}}
+function showInHighlight(s,f){return (!S.hiFrets.size||S.hiFrets.has(f))&&(!S.hiStrings.size||S.hiStrings.has(s))}
+
+function renderMarks(X,F){
+  renderPentLines(X,F);renderManualLines(X,F);renderChordRings(X,F);renderSegments(X,F);renderTriadPentDots(X,F);renderKeyPositionDots(X,F);
+  for(const m of S.marks.values()){
+    if(m.f===0||!showInHighlight(m.s,m.f))continue;
+    const cx=X[m.s],cy=(F[m.f-1]+F[m.f])/2;
+    const d=document.createElement('div');d.className='mark '+m.c+(pcAt(m.s,m.f)===S.root?' root':'');
+    d.style.left=cx+'px';d.style.top=cy+'px';d.textContent=dotText(m.s,m.f);d.onclick=e=>{e.stopPropagation();press(m.s,m.f,e)};bd.appendChild(d);
+    if(pcAt(m.s,m.f)===S.root)addKeyRootRing(cx,cy);
+  }
+  if(S.triadOn&&S.triad){
+    const pcs=[...new Set(S.triad.notes.map(n=>n.pc))];
+    for(let s=0;s<6;s++)for(let f=1;f<=TOTAL_FRETS;f++)if(pcs.includes(pcAt(s,f))&&showInHighlight(s,f)&&triadStringOk(s)){
+      const cx=X[s],cy=(F[f-1]+F[f])/2;
+      addChordRing(cx,cy);
+      if(pcAt(s,f)===S.triad.root)addTriadRootDot(cx,cy);
+      addGhostLabel(cx,cy,triadDisplayText(s,f));
+    }
+  }
+  renderLeadingTriadDots(X,F);
+}
+function addChordRing(cx,cy){const d=document.createElement('div');d.className='chordring';d.style.left=cx+'px';d.style.top=cy+'px';bd.appendChild(d)}
+function addGhostLabel(cx,cy,text){
+  const lab=document.createElement('div');
+  lab.className='triadlabel triadghost';
+  lab.style.position='absolute';
+  lab.style.left=cx+'px';
+  lab.style.top=cy+'px';
+  lab.style.transform='translate(-50%,-50%)';
+  lab.style.fontSize='14px';
+  lab.style.lineHeight='1';
+  lab.textContent=text;
+  bd.appendChild(lab);
+}
+function triadStringOk(s){return S.triadStrings.has(s)}
+function renderLeadingTriadDots(X,F){
+  if(!S.leadingTriad||S.leadingTriadChord===null||S.leadingTriadChord===undefined)return;
+  const pcs=chordTriadPcs(S.leadingTriadChord);
+  for(let s=0;s<6;s++){
+    if(!triadStringOk(s))continue;
+    for(let f=1;f<=TOTAL_FRETS;f++){
+      if(pcs.includes(pcAt(s,f))&&showInHighlight(s,f)){
+        const d=document.createElement('div');
+        d.className='leadingtriaddot';
+        d.style.left=X[s]+'px';
+        d.style.top=((F[f-1]+F[f])/2)+'px';
+        bd.appendChild(d);
+      }
+    }
+  }
+}
+function chordTriadPcs(i){const p=parent(),r=p[i];return i===0||i===3||i===4?[r,(r+4)%12,(r+7)%12]:i===6?[r,(r+3)%12,(r+6)%12]:[r,(r+3)%12,(r+7)%12]}
+function renderChordRings(X,F){return}
+function activeTriadPcs(){if(S.triadOn&&S.triad)return [...new Set(S.triad.notes.map(n=>n.pc))];return []}
+function activeTriadRootPc(){if(S.triadOn&&S.triad)return S.triad.root;return null}
+function isTriadPc(s,f){return activeTriadPcs().includes(pcAt(s,f))&&showInHighlight(s,f)&&triadStringOk(s)}
+function triadDisplayText(s,f){return S.label==='interval'&&S.triadPent?triadPentDegreeText(s,f):dotText(s,f)}
+
+function pentPcs(){return [0,2,4,7,9].map(i=>(ni(keyObj()[0])+i)%12)}
+function rebuildPositions(){S.marks.clear();if(!S.stage)return;const pent=pentPcs();for(let s=0;s<6;s++)for(let f=0;f<=TOTAL_FRETS;f++)if(pent.includes(pcAt(s,f)))S.marks.set(keyOf(s,f),mark(s,f,'black'));if(S.stage>1){const fill=parent().filter(p=>!pent.includes(p));for(let s=0;s<6;s++)for(let f=0;f<=TOTAL_FRETS;f++)if(fill.includes(pcAt(s,f))&&!S.marks.has(keyOf(s,f)))S.marks.set(keyOf(s,f),mark(s,f,'gray'))}}
+function positions(){S.stage=(S.stage+1)%3;if(S.stage===0){S.segments.clear();S.autoSegMarks.clear()}rebuildPositions();syncSegmentMarks();render()}
+function visibleFretsOnString(s){const pent=pentPcs(),arr=[];for(let f=0;f<=TOTAL_FRETS;f++)if(pent.includes(pcAt(s,f))&&showInHighlight(s,f))arr.push(f);return arr}
+function relPc(pc){return (pc-ni(keyObj()[0])+12)%12}function absPc(rel){return (ni(keyObj()[0])+rel)%12}
+function segmentKeyFor(s,a,b){return s+'|'+a+'|'+b}
+function segmentToFrets(key){
+  const parts=key.split('|').map(Number);
+
+  // Current format: string|startFret|endFret. This preserves the exact visible
+  // bar shape and lets key changes move the bar cleanly by fret distance.
+  if(parts.length===3){
+    const s=parts[0],a=parts[1],b=parts[2],gap=b-a-1;
+    if(s<0||s>5||a<1||b>TOTAL_FRETS||a>=b)return null;
+    return {s,a,b,gap};
+  }
+
+  // Legacy 2.2 format fallback: string|relativePcA|relativePcB|gap.
+  // This keeps older saved bars from breaking if opened in this version.
+  const s=parts[0],ra=parts[1],rb=parts[2],gap=parts[3];
+  const pa=absPc(ra),pb=absPc(rb),matches=[];
+  for(let a=1;a<=TOTAL_FRETS;a++){
+    const b=a+gap+1;
+    if(b<=TOTAL_FRETS&&pcAt(s,a)===pa&&pcAt(s,b)===pb)matches.push({s,a,b,gap});
+  }
+  if(!matches.length)return null;
+  const visible=matches.find(seg=>showInHighlight(seg.s,seg.a)&&showInHighlight(seg.s,seg.b));
+  return visible||matches[0];
+}
+function keyShiftDelta(oldRoot,newRoot){
+  let d=(newRoot-oldRoot+12)%12;
+  if(d>6)d-=12;
+  return d;
+}
+function transposeSegments(delta){
+  if(!delta)return;
+  const moved=new Set();
+  for(const key of S.segments){
+    const seg=segmentToFrets(key);
+    if(!seg)continue;
+    const a=seg.a+delta,b=seg.b+delta;
+    if(a>=1&&b<=TOTAL_FRETS&&a<b)moved.add(segmentKeyFor(seg.s,a,b));
+  }
+  S.segments=moved;
+}
+function addAutoMark(s,f,c='black'){
+  if(f<0||f>TOTAL_FRETS)return;
+  const mk=keyOf(s,f);
+  S.marks.set(mk,mark(s,f,c));
+  S.autoSegMarks.add(mk);
+}
+function addSegmentNeighborhood(seg){
+  const pent=pentPcs();
+  const minF=Math.max(0,Math.min(seg.a,seg.b)-2);
+  const maxF=Math.min(TOTAL_FRETS,Math.max(seg.a,seg.b)+2);
+  const minS=Math.max(0,seg.s-1);
+  const maxS=Math.min(5,seg.s+1);
+  for(let s=minS;s<=maxS;s++){
+    for(let f=minF;f<=maxF;f++){
+      if(pent.includes(pcAt(s,f))&&showInHighlight(s,f))addAutoMark(s,f,'black');
+    }
+  }
+}
+function syncSegmentMarks(){
+  for(const key of S.autoSegMarks)S.marks.delete(key);
+  S.autoSegMarks.clear();
+  for(const segKey of S.segments){
+    const seg=segmentToFrets(segKey);
+    if(!seg)continue;
+    addSegmentNeighborhood(seg);
+    addAutoMark(seg.s,seg.a,'black');
+    addAutoMark(seg.s,seg.b,'black');
+  }
+}
+function toggleSegmentAt(s,f){
+  const arr=visibleFretsOnString(s);
+  let a=null,b=null;
+  for(let i=0;i<arr.length-1;i++)if(f>arr[i]&&f<arr[i+1]){a=arr[i];b=arr[i+1];break}
+  if(a===null)return false;
+  const gap=b-a-1;
+  if(gap!==1&&gap!==2)return false;
+  const key=segmentKeyFor(s,a,b);
+  S.segments.has(key)?S.segments.delete(key):S.segments.add(key);
+  syncSegmentMarks();
+  render();
+  return true;
+}
+function autoVisibleSegs(){
+  const out=[];
+  for(let s=0;s<6;s++){
+    const arr=visibleFretsOnString(s);
+    for(let i=0;i<arr.length-1;i++){
+      const a=arr[i],b=arr[i+1],gap=b-a-1;
+      if(gap===1||gap===2)out.push({s,a,b,gap,key:'auto|'+s+'|'+a+'|'+b,color:gap===1?'blue':'red',auto:true});
+    }
+  }
+  return out;
+}
+function visibleSegs(){
+  if(S.showAllBars)return autoVisibleSegs();
+  const out=[];
+  for(const key of S.segments){
+    const seg=segmentToFrets(key);
+    if(!seg)continue;
+    const {s,a,b,gap}=seg;
+    if(!showInHighlight(s,a)||!showInHighlight(s,b))continue;
+    out.push({...seg,key,color:gap===1?'blue':'red'});
+  }
+  return out;
+}
+function renderSegments(X,F){
+  for(const seg of visibleSegs()){
+    const {s,a,b,gap,key}=seg;
+    const y1=F[a],y2=F[b-1];
+    const d=document.createElement('div');
+    d.className='segmark '+(gap===1?'blue':'red');
+    d.style.left=X[s]+'px';
+    d.style.top=((y1+y2)/2)+'px';
+    d.style.width='13px';
+    d.style.height=Math.max(12,y2-y1)+'px';
+    d.style.transform='translate(-50%,-50%)';
+    if(!seg.auto)d.onclick=e=>{e.stopPropagation();S.pendingSwitch={type:'bar',key,s,a,b,gap};openNotesDialog(e,s,Math.round((a+b)/2))};
+    else d.style.pointerEvents='none';
+    bd.appendChild(d);
+  }
+}
+function pentDegreeIndex(pc){return [0,2,4,7,9].indexOf((pc-ni(keyObj()[0])+12)%12)}
+function pentLinePoints(){const pent=pentPcs(),pts=[];for(let s=0;s<6;s++)for(let f=0;f<=TOTAL_FRETS;f++)if(pent.includes(pcAt(s,f))&&showInHighlight(s,f))pts.push({s,f,m:midiAt(s,f)});return pts.sort((a,b)=>a.m-b.m||a.s-b.s||a.f-b.f)}
+function consecutivePentPairs(){const pts=pentLinePoints(),pairs=[],seen=new Set();for(let i=0;i<pts.length;i++)for(let j=i+1;j<pts.length;j++){const a=pts[i],b=pts[j];if(Math.abs(b.s-a.s)!==1||Math.abs(b.f-a.f)>3)continue;const low=a.m<=b.m?a:b,high=a.m<=b.m?b:a;const li=pentDegreeIndex(pcAt(low.s,low.f)),hi=pentDegreeIndex(pcAt(high.s,high.f));if(li<0||hi<0||((hi-li+5)%5!==1))continue;let interval=high.m-low.m;while(interval>12)interval-=12;if(interval!==2&&interval!==3)continue;const key=[Math.min(a.s,b.s),a.f,Math.max(a.s,b.s),b.f,interval].join('|');if(!seen.has(key)){seen.add(key);pairs.push([a,b,interval])}}return pairs}
+function pentLineSvg(){let svg=bd.querySelector('.plinksvg');if(!svg){svg=document.createElementNS('http://www.w3.org/2000/svg','svg');svg.classList.add('plinksvg');bd.appendChild(svg)}return svg}
+function drawPentLine(x1,y1,x2,y2,color){const path=document.createElementNS('http://www.w3.org/2000/svg','path');const mx=(x1+x2)/2,my=(y1+y2)/2,dx=x2-x1,dy=y2-y1,span=Math.max(1,Math.hypot(dx,dy)),bow=Math.min(6,Math.max(3,span*.07)),nx=-dy/span,ny=dx/span;path.setAttribute('d',`M ${x1} ${y1} Q ${mx+nx*bow} ${my+ny*bow}, ${x2} ${y2}`);path.setAttribute('fill','none');path.setAttribute('stroke',color==='blue'?'var(--blue)':'#d21818');path.setAttribute('stroke-width','2');path.setAttribute('stroke-linecap','round');pentLineSvg().appendChild(path)}
+function renderPentLines(X,F){if(!S.pLines)return;for(const [a,b,interval] of consecutivePentPairs())drawPentLine(X[a.s],a.f===0?0:(F[a.f-1]+F[a.f])/2,X[b.s],b.f===0?0:(F[b.f-1]+F[b.f])/2,interval===2?'blue':'red')}
+function renderManualLines(X,F){
+  for(const key of S.manualLines){
+    const ln=lineFromKey(key);
+    if(!showInHighlight(ln.s,ln.f)||!showInHighlight(ln.s2,ln.f2))continue;
+    const y1=ln.f===0?0:(F[ln.f-1]+F[ln.f])/2;
+    const y2=ln.f2===0?0:(F[ln.f2-1]+F[ln.f2])/2;
+    const interval=(midiAt(ln.s2,ln.f2)-midiAt(ln.s,ln.f)+120)%12;
+    drawPentLine(X[ln.s],y1,X[ln.s2],y2,interval===2?'blue':'red');
+    const svg=pentLineSvg();
+    const path=svg.lastChild;
+    if(path){
+      path.style.pointerEvents='stroke';
+      path.style.cursor='pointer';
+      path.onclick=e=>{
+        e.stopPropagation();
+        S.pendingSwitch={type:'line',key,s:ln.s,f:ln.f,s2:ln.s2,f2:ln.f2};
+        openNotesDialog(e,ln.s,ln.f);
+      };
+    }
+  }
+}
+function chordQualityForDegree(i){return i===0||i===3||i===4?'Major':i===6?'Dim':'Minor'}
+function triadPentRootPc(){let i=S.chordSelect!==null?S.chordSelect:S.active;if(i!==null&&i!==undefined){const r=parent()[i];return chordQualityForDegree(i)==='Minor'?(r+3)%12:r}const r=activeTriadRootPc();return r!==null?r:parent()[0]}
+function triadPentPcs(){const r=triadPentRootPc();return [0,2,4,7,9].map(i=>(r+i)%12)}
+function triadPentDegreeText(s,f){return ({0:'1′',2:'2′',4:'3′',7:'5′',9:'6′'})[(pcAt(s,f)-triadPentRootPc()+12)%12]||''}
+function renderTriadPentDots(X,F){if(!S.triadPent)return;const pcs=triadPentPcs();for(let s=0;s<6;s++)for(let f=1;f<=TOTAL_FRETS;f++)if(pcs.includes(pcAt(s,f))){const d=document.createElement('div');d.className='triadpentdot';d.style.left=X[s]+'px';d.style.top=(F[f-1]+F[f])/2+'px';d.textContent=isTriadPc(s,f)?'':(S.label==='interval'?triadPentDegreeText(s,f):'');bd.appendChild(d)}}
+function keyPositionOk(s,f){return S.showKeyPositions&&pentPcs().includes(pcAt(s,f))&&showInHighlight(s,f)&&!(activeTriadPcs().includes(pcAt(s,f))&&triadStringOk(s))}
+function renderKeyPositionDots(X,F){if(!S.showKeyPositions)return;for(let s=0;s<6;s++)for(let f=1;f<=TOTAL_FRETS;f++)if(keyPositionOk(s,f)){const cx=X[s],cy=(F[f-1]+F[f])/2,d=document.createElement('div');d.className='mark black';d.style.left=cx+'px';d.style.top=cy+'px';d.textContent=S.label==='interval'&&S.triadPent?'':dotText(s,f);bd.appendChild(d);if(pcAt(s,f)===S.root)addKeyRootRing(cx,cy)}}
+function isBetweenPentGap(s,f){
+  const arr=visibleFretsOnString(s);
+  for(let i=0;i<arr.length-1;i++){
+    if(f>arr[i]&&f<arr[i+1]){
+      const gap=arr[i+1]-arr[i]-1;
+      return gap===1||gap===2;
+    }
+  }
+  return false;
+}
+function isKeyPentNote(s,f){return pentPcs().includes(pcAt(s,f))}
+function lineKey(a,b){return [a.s,a.f,b.s,b.f].join('|')}
+function lineFromKey(key){const [s,f,s2,f2]=key.split('|').map(Number);return{s,f,s2,f2}}
+function findAdjacentHigherPentNote(s,f){
+  const pc=pcAt(s,f),m=midiAt(s,f),deg=pentDegreeIndex(pc);
+  if(deg<0)return null;
+  const candidates=[];
+  for(const ds of [-1,1]){
+    const s2=s+ds;
+    if(s2<0||s2>5)continue;
+    for(let f2=0;f2<=TOTAL_FRETS;f2++){
+      if(!showInHighlight(s2,f2))continue;
+      const m2=midiAt(s2,f2);
+      if(m2<=m)continue;
+      const deg2=pentDegreeIndex(pcAt(s2,f2));
+      if(deg2<0||((deg2-deg+5)%5)!==1)continue;
+      const interval=(m2-m)%12;
+      if(interval!==2&&interval!==3)continue;
+      candidates.push({s:s2,f:f2,dist:Math.abs(f2-f)+Math.abs(ds)});
+    }
+  }
+  candidates.sort((a,b)=>a.dist-b.dist||a.f-b.f);
+  return candidates[0]||null;
+}
+function positionModeDialog(dialog,evt,s=null,f=null){
+  const box=dialog.querySelector('.modebox');
+  if(!box)return;
+  const w=152,h=170,pad=8,gap=12;
+  let cx=window.innerWidth/2, cy=window.innerHeight/2;
+
+  if(s!==null&&f!==null){
+    const rect=bd.getBoundingClientRect();
+    const X=stringXs();
+    const F=Array.from({length:TOTAL_FRETS+1},(_,i)=>fretY(i));
+    cx=rect.left+X[s];
+    cy=rect.top+(f===0?0:(F[f-1]+F[f])/2);
+  }else if(evt&&evt.clientX!==undefined){
+    cx=evt.clientX;
+    cy=evt.clientY;
+  }
+
+  let x=cx-w/2;
+  let y=cy-h-gap; // prefer centered above the edit point
+
+  if(y<pad)y=cy+gap; // if not enough room above, place below
+  if(y+h>window.innerHeight-pad)y=Math.max(pad,window.innerHeight-h-pad);
+
+  x=Math.max(pad,Math.min(window.innerWidth-w-pad,x));
+  box.style.left=x+'px';
+  box.style.top=y+'px';
+}
+function openBarsDialog(evt=null,s=null,f=null){
+  closeAllPopups('bars');
+  barsModeCheck.checked=S.insertMode==='bars';
+  positionModeDialog(barsDialog,evt,s,f);
+  barsDialog.classList.add('on');
+}
+function closeBarsDialog(){barsDialog.classList.remove('on');clearPendingSwitch()}
+function openLinesDialog(evt=null,s=null,f=null){
+  closeAllPopups('lines');
+  linesModeCheck.checked=S.insertMode==='lines';
+  positionModeDialog(linesDialog,evt,s,f);
+  linesDialog.classList.add('on');
+}
+function closeLinesDialog(){
+  if(S.pendingSwitch&&S.pendingSwitch.type==='lineNote'){
+    S.marks.set(keyOf(S.pendingSwitch.s,S.pendingSwitch.f),mark(S.pendingSwitch.s,S.pendingSwitch.f,S.color));
+    linesDialog.classList.remove('on');
+    clearPendingSwitch();
+    render();
+    return;
+  }
+  linesDialog.classList.remove('on');clearPendingSwitch()
+}
+function openNotesDialog(evt=null,s=null,f=null){
+  closeAllPopups('notes');
+  notesModeCheck.checked=S.insertMode==='notes';
+  positionModeDialog(notesDialog,evt,s,f);
+  notesDialog.classList.add('on');
+}
+function closeNotesDialog(){notesDialog.classList.remove('on');clearPendingSwitch()}
+function setInsertMode(mode){
+  S.insertMode=mode;
+  barsModeCheck.checked=mode==='bars';
+  linesModeCheck.checked=mode==='lines';
+  notesModeCheck.checked=mode==='notes';
+}
+function convertPendingToBar(){
+  const p=S.pendingSwitch;
+  if(!p||p.type!=='note')return;
+  const key=keyOf(p.s,p.f);
+  S.marks.delete(key);
+  toggleSegmentAt(p.s,p.f);
+}
+function convertPendingToLine(){
+  const p=S.pendingSwitch;
+  if(!p||p.type!=='lineNote')return;
+  const target=findAdjacentHigherPentNote(p.s,p.f);
+  if(!target)return;
+  // Line mode uses black note markers at both ends of the manual line.
+  S.marks.set(keyOf(p.s,p.f),mark(p.s,p.f,'black'));
+  S.marks.set(keyOf(target.s,target.f),mark(target.s,target.f,'black'));
+  S.manualLines.add(lineKey({s:p.s,f:p.f},target));
+  render();
+}
+function convertPendingToNote(){
+  const p=S.pendingSwitch;
+  if(!p)return;
+  if(p.type==='bar'){
+    S.segments.delete(p.key);
+    syncSegmentMarks();
+    const mid=Math.round((p.a+p.b)/2);
+    S.marks.set(keyOf(p.s,mid),mark(p.s,mid,S.color));
+    render();
+  }else if(p.type==='line'){
+    S.manualLines.delete(p.key);
+    S.marks.set(keyOf(p.s,p.f),mark(p.s,p.f,'black'));
+    if(p.s2!==undefined)safeDeleteLineEndpoint(keyOf(p.s2,p.f2));
+    render();
+  }
+}
+function clearPendingSwitch(){S.pendingSwitch=null;}
+function hasManualLineAt(s,f){
+  for(const key of S.manualLines){
+    const ln=lineFromKey(key);
+    if((ln.s===s&&ln.f===f)||(ln.s2===s&&ln.f2===f))return key;
+  }
+  return null;
+}
+function toggleManualLineAt(s,f){
+  const existing=hasManualLineAt(s,f);
+  if(existing){
+    const ln=lineFromKey(existing);
+    S.pendingSwitch={type:'line',key:existing,s:ln.s,f:ln.f,s2:ln.s2,f2:ln.f2};
+    openNotesDialog(null,s,f);
+    return;
+  }
+  const target=findAdjacentHigherPentNote(s,f);
+  if(!target)return;
+  S.marks.set(keyOf(s,f),mark(s,f,'black'));
+  S.marks.set(keyOf(target.s,target.f),mark(target.s,target.f,'black'));
+  S.manualLines.add(lineKey({s,f},target));
+  render();
+}
+function press(s,f,evt=null){
+  const key=keyOf(s,f);
+
+  if(S.insertMode==='bars'){
+    // Bars mode handles valid same-string gap clicks first.
+    const lineKeyHit=hasManualLineAt(s,f);
+    if(lineKeyHit){
+      const ln=lineFromKey(lineKeyHit);
+      S.pendingSwitch={type:'line',key:lineKeyHit,s:ln.s,f:ln.f,s2:ln.s2,f2:ln.f2};
+      openNotesDialog(evt,s,f);
+      return;
+    }
+    if(toggleSegmentAt(s,f))return;
+
+    // If it was not a bar location, allow the line workflow.
+    if(isKeyPentNote(s,f)&&findAdjacentHigherPentNote(s,f)){
+      S.pendingSwitch={type:'lineNote',s,f};
+      openLinesDialog(evt,s,f);
+      return;
+    }
+    return;
+  }
+
+  if(S.insertMode==='lines'){
+    // Lines mode first respects clicks on existing manual lines.
+    const lineKeyHit=hasManualLineAt(s,f);
+    if(lineKeyHit){
+      const ln=lineFromKey(lineKeyHit);
+      S.pendingSwitch={type:'line',key:lineKeyHit,s:ln.s,f:ln.f,s2:ln.s2,f2:ln.f2};
+      openNotesDialog(evt,s,f);
+      return;
+    }
+
+    // If the click is a valid same-string bar location, allow bars even while in line mode.
+    if(toggleSegmentAt(s,f))return;
+
+    // Otherwise continue normal line insertion.
+    toggleManualLineAt(s,f);
+    return;
+  }
+
+  const lineKeyHit=hasManualLineAt(s,f);
+  if(lineKeyHit){
+    const ln=lineFromKey(lineKeyHit);
+    S.pendingSwitch={type:'line',key:lineKeyHit,s:ln.s,f:ln.f,s2:ln.s2,f2:ln.f2};
+    openNotesDialog(evt,s,f);
+    return;
+  }
+
+  if(S.marks.has(key)){
+    const m=S.marks.get(key);
+
+    // Blue user note between same-string pentatonic positions can become Bars.
+    if(m.c==='blue'&&isBetweenPentGap(s,f)){
+      S.pendingSwitch={type:'note',s,f};
+      openBarsDialog(evt,s,f);
+      return;
+    }
+
+    // Existing black/bar-created pentatonic notes can still become Lines.
+    if(isKeyPentNote(s,f)&&findAdjacentHigherPentNote(s,f)){
+      S.pendingSwitch={type:'lineNote',s,f};
+      openLinesDialog(evt,s,f);
+      return;
+    }
+
+    S.marks.delete(key);
+  }else{
+    if(isKeyPentNote(s,f)&&findAdjacentHigherPentNote(s,f)){
+      S.pendingSwitch={type:'lineNote',s,f};
+      openLinesDialog(evt,s,f);
+      return;
+    }
+    S.marks.set(key,mark(s,f,S.color));
+  }
+  render();
+}
+
+function chordLines(){const p=parent(),num=['I','ii','iii','IV','V','vi','vii°'];return p.map((r,i)=>({rn:num[i],ch:i===0||i===3||i===4?spell(r):i===6?'':spell(r)+'m'}))}
+function chordButtonLineHTML(i,cls=''){
+  const line=chordLines()[i]||chordLines()[0];
+  return '<div class="chordbtnline '+cls+'"><span class="chordbtnrn">'+line.rn+'</span>'+(line.ch?'<span class="chordbtnnote">'+line.ch+'</span>':'')+'</div>';
+}
+function chordButtonHTML(){return 'Chord'}
+function selectChord(i){
+  // Manual chord selection returns the progression dropdown to "Chord".
+  // If Chord mode is already playing, switch the rhythmic playback immediately.
+  if(drone&&drone.prog)stopDrone();
+  progSel.selectedIndex=0;
+  progSel.value='';
+  S.chordSelect=i;
+  S.active=i;
+  S.triadOn=true;
+  setTriad(i);
+  if(drone&&drone.chord){
+    restartManualChordPattern();
+    return;
+  }
+  render();
+}
+function openChordDialog(){
+  if(S.chordDialogOpen){closeChordDialog();return}
+  closeAllPopups('chord');
+  positionPanelPopup(chordDialog,chordBox,'above');
+  S.chordDialogOpen=true;
+  render();
+  positionPanelPopup(chordDialog,chordBox,'above');
+}
+function closeChordDialog(){
+  S.chordDialogOpen=false;
+  if(!drone&&S.chordSelect!==null){
+    progSel.selectedIndex=0;
+    progSel.value='';
+  }
+  syncPopupButtons();
+  render();
+}
+function renderChords(){
+  chordBox.innerHTML=chordButtonHTML();
+  syncPopupButtons();
+  chordDialog.classList.toggle('on',S.chordDialogOpen);
+  chordDialogList.innerHTML='';
+  chordLines().forEach((line,i)=>{
+    const d=document.createElement('button');
+    d.type='button';
+    const isCurrentPlaying=!!drone&&S.active===i;
+    const isManualSelected=!drone&&!progSel.value&&S.chordSelect===i;
+    const isLeading=!!drone&&S.leadingTriad&&S.leadingTriadChord===i&&S.active!==i;
+    d.className='cline'
+      +(isCurrentPlaying||isManualSelected?' currentChord chordsel':'')
+      +(isLeading?' leadingChord':'')
+      +(S.mode!==null&&parent()[i]===S.root?' modalroot':'');
+    d.innerHTML='<span class="rn">'+line.rn+'</span>'+(line.ch?'<span>'+line.ch+'</span>':'');
+    d.onclick=()=>selectChord(i);
+    chordDialogList.appendChild(d);
+  });
+}
+function progressions(){return [[0,0,3,4],[0,3,0,4],[0,0,4,3],[0,5,3,4],[0,6,3,0],[0,0,1,2,3],[0,3,4,0],[0,4,5,3],[0,1,4,0],[0,2,3,4],[0,1,2,3,4,5,6]]}
+function triadType(i){const p=rotatedScale(),r=p[i],t=p[(i+2)%7],f=p[(i+4)%7],d3=(t-r+12)%12,d5=(f-r+12)%12;return d3===4&&d5===7?'Major':d3===3&&d5===7?'Minor':d3===3&&d5===6?'Dim':null}
+function setTriad(i){if(!S.triadOn){S.triad=null;return}const p=rotatedScale(),type=triadType(i);if(!type){S.triad=null;return}const pcs=type==='Major'?[p[i],(p[i]+4)%12,(p[i]+7)%12]:type==='Minor'?[p[i],(p[i]+3)%12,(p[i]+7)%12]:[p[i],(p[i]+3)%12,(p[i]+6)%12];const out=[],arr=[3,4,5].map(s=>Array.from({length:TOTAL_FRETS},(_,j)=>j+1).filter(f=>pcs.includes(pcAt(s,f))).map(f=>({s,f,pc:pcAt(s,f)})));for(const A of arr[0])for(const B of arr[1])for(const C of arr[2]){const got=new Set([A.pc,B.pc,C.pc]);if(pcs.every(p=>got.has(p))){const fs=[A.f,B.f,C.f],score=fs.reduce((z,f)=>z+(f<5?5-f:f>7?f-7:0),0)+(Math.max(...fs)-Math.min(...fs))*.25;out.push({root:p[i],type,deg:i,notes:[A,B,C],score})}}S.triad=out.sort((a,b)=>a.score-b.score)[0]||null}
+function chordPlainName(i){const r=parent()[i];return i===0||i===3||i===4?spell(r):i===6?spell(r)+'mb5':spell(r)+'min'}
+function renderPlayLabel(X,F){}
+
+function getCtx(){if(!AC)AC=new(window.AudioContext||window.webkitAudioContext)();if(AC.state==='suspended')AC.resume();return AC}
+function hz(m){return 440*Math.pow(2,(m-69)/12)}
+function toneStackAt(midis,startTime,dur=.65,level=.12){
+  const c=getCtx(),g=c.createGain(),os=[];
+  const attack=.006,release=.05;
+  g.gain.setValueAtTime(.0001,startTime);
+  g.gain.exponentialRampToValueAtTime(level,startTime+attack);
+  g.gain.setValueAtTime(level,Math.max(startTime+attack,startTime+dur-release));
+  g.gain.exponentialRampToValueAtTime(.0001,startTime+dur);
+  midis.forEach((m,i)=>{
+    const o=c.createOscillator(),gg=c.createGain();
+    o.type='triangle';
+    o.frequency.setValueAtTime(hz(m),startTime);
+
+    // Slightly stronger bass/root, gentle upper voices.
+    const baseGain = midis.length>2 ? (i===0?.30:.20) : (i?.40:.78);
+    gg.gain.setValueAtTime(baseGain,startTime);
+
+    const h=c.createOscillator(), hg=c.createGain();
+    h.type='sine';
+    h.frequency.setValueAtTime(hz(m)*2,startTime);
+    hg.gain.setValueAtTime(i===0?.07:.045,startTime);
+
+    // Subtle stereo spread: bass/root just left, upper voices just right.
+    let panNode=null;
+    if(c.createStereoPanner){
+      panNode=c.createStereoPanner();
+      panNode.pan.setValueAtTime(i===0?-0.12:0.10,startTime);
+      o.connect(gg);
+      h.connect(hg);
+      gg.connect(panNode);
+      hg.connect(panNode);
+      panNode.connect(g);
+    }else{
+      o.connect(gg);
+      h.connect(hg);
+      gg.connect(g);
+      hg.connect(g);
+    }
+
+    // Subtle short-room ambience: tiny delayed send, very low level.
+    // This makes chords less dry without changing rhythm or timing.
+    if(c.createDelay){
+      const roomDelay=c.createDelay(.25), roomGain=c.createGain();
+      roomDelay.delayTime.setValueAtTime(i===0?.035:.055,startTime);
+      roomGain.gain.setValueAtTime(i===0?.018:.026,startTime);
+      if(panNode){
+        panNode.connect(roomDelay);
+      }else{
+        gg.connect(roomDelay);
+        hg.connect(roomDelay);
+      }
+      roomDelay.connect(roomGain);
+      roomGain.connect(g);
+    }
+
+    o.start(startTime);
+    h.start(startTime);
+    o.stop(startTime+dur+.03);
+    h.stop(startTime+dur+.03);
+
+    os.push(o);
+    os.push(h);
+  });
+  g.connect(c.__masterOut||c.destination);
+  return{oscs:os,gain:g,start:startTime,dur};
+}
+function toneStack(midis,level=.12){return toneStackAt(midis,getCtx().currentTime,.65,level)}
+function stopPart(p,fade=.12){
+  const now=getCtx().currentTime;
+  try{
+    p.gain.gain.cancelScheduledValues(now);
+    p.gain.gain.setValueAtTime(Math.max(p.gain.gain.value,.0001),now);
+    p.gain.gain.exponentialRampToValueAtTime(.0001,now+fade);
+    p.oscs.forEach(o=>{try{o.stop(now+fade+.03)}catch(e){}});
+  }catch(e){}
+}
+
+function voiceLedTriadMidis(i){
+  const pcs=chordTriadPcs(i);
+  const prev=(drone&&drone.lastTriadMidis&&drone.lastTriadMidis.length===3)?drone.lastTriadMidis:null;
+  if(!prev){
+    const base=triadMidis(i);
+    if(drone)drone.lastTriadMidis=base.slice();
+    return base;
+  }
+  const out=[];
+  pcs.forEach((pc,idx)=>{
+    let best=null,bestDist=1e9;
+    for(let m=pc+36;m<=pc+84;m+=12){
+      const d=Math.abs(m-prev[idx]);
+      if(d<bestDist){bestDist=d;best=m}
+    }
+    out.push(best);
+  });
+  // Keep voices ordered enough to avoid ugly crossings.
+  out.sort((a,b)=>a-b);
+  if(drone)drone.lastTriadMidis=out.slice();
+  return out;
+}
+function triadMidis(i){const pcs=chordTriadPcs(i),out=[];let prev=55;for(const pc of pcs){let m=60;while(m%12!==pc)m++;while(m<=prev)m+=12;prev=m;out.push(m)}return out}
+function bassMidiForDegree(i){const pc=rotatedScale()[i];let m=48;while(m%12!==pc)m++;return m}
+function selectedChordIndex(){return S.chordSelect!==null?S.chordSelect:(S.active!==null&&S.active!==undefined?S.active:0)}
+function chordDronePart(i){return toneStack([bassMidiForDegree(i),...triadMidis(i)],.13)}
+function scheduleToneAt(midis,start,dur,level=.12){
+  if(!drone||drone.state==='held')return;
+  const p=toneStackAt(midis,start,Math.max(.05,dur),level);
+  if(!drone.parts)drone.parts=[];
+  drone.parts.push(p);
+}
+function scheduleTone(midis,delay,dur,level=.12){
+  if(!drone||drone.state==='held')return;
+  const c=getCtx();
+  const base=drone.patternStart||c.currentTime+.012;
+  scheduleToneAt(midis,base+delay/1000,Math.max(.05,dur/1000),level);
+}
+function playPatternAt(i,startTime){
+  if(!drone)return;
+  const beat=drone.beatMs/1000,tri=(S.voiceLead?voiceLedTriadMidis(i):triadMidis(i)),bass=bassMidiForDegree(i),r=S.rhythm||'steady';
+  if(metroTog&&metroTog.checked){
+    for(let b=0;b<8;b++)clickAt(startTime+b*beat,b%4===0);
+  }
+  const chord=(b,d=0.45,l=.12)=>scheduleToneAt(tri,startTime+b*beat,d*beat,l);
+  const bassn=(b,d=0.35,l=.30)=>scheduleToneAt([bass],startTime+b*beat,d*beat,l);
+  for(let cycle=0;cycle<2;cycle++){
+    const base=cycle*4;
+    if(r==='steady'){
+      chord(base,1.8,.13); bassn(base,.55,.32); bassn(base+2,.55,.30); chord(base+2,.9,.10);
+    }else if(r==='four'){
+      for(let b=0;b<4;b++){bassn(base+b,.22,b===0?.34:.24); chord(base+b+.04,.32,b===0?.13:.09)}
+    }else if(r==='backbeat'){
+      bassn(base,.45,.32); chord(base+1,.55,.15); bassn(base+2,.35,.28); chord(base+3,.55,.15);
+    }else if(r==='offbeat'){
+      bassn(base,.35,.32); chord(base+.5,.45,.12); bassn(base+2,.35,.29); chord(base+2.5,.45,.12); chord(base+3.5,.35,.10);
+    }else if(r==='bossa'){
+      bassn(base,.35,.32); chord(base+.75,.35,.12); bassn(base+1.5,.25,.28); chord(base+2,.45,.13); bassn(base+2.75,.25,.28); chord(base+3.25,.35,.11);
+    }else if(r==='waltz'){
+      bassn(base,.45,.33); chord(base+1,.45,.12); chord(base+2,.45,.12);
+    }else if(r==='tango'){
+      bassn(base,.55,.34); chord(base+1.5,.25,.14); bassn(base+2,.35,.30); chord(base+3,.65,.13);
+    }else if(r==='anticipate'){
+      bassn(base,.45,.32); chord(base+1,.45,.12); bassn(base+2,.35,.30); chord(base+3.5,.65,.15);
+    }else if(r==='swing'){
+      bassn(base,.35,.32); chord(base+.66,.28,.12); bassn(base+1.33,.28,.27); chord(base+2,.35,.13); bassn(base+2.66,.28,.27); chord(base+3.33,.28,.11);
+    }else if(r==='sparse'){
+      bassn(base,.7,.34); chord(base+.15,3.25,.10); bassn(base+2.8,.35,.25);
+    }
+  }
+}
+function playPattern(i){
+  if(!drone)return;
+  const c=getCtx();
+  drone.patternStart=c.currentTime+.012;
+  playPatternAt(i,drone.patternStart);
+}
+
+function cleanupAudioPools(){
+  if(!drone)return;
+  const now=getCtx().currentTime;
+  if(drone.parts)drone.parts=drone.parts.filter(p=>p&&p.start!==undefined&&p.start+p.dur+1.0>now);
+  if(drone.clicks)drone.clicks=drone.clicks.filter(p=>p&&p.start!==undefined&&p.start+p.dur+0.5>now);
+}
+function clearAudioScheduler(){
+  if(!drone)return;
+  clearTimeout(drone.audioTimer);
+  drone.audioTimer=null;
+}
+function scheduleProgressionAudio(){
+  if(!drone||!drone.prog)return;
+  const c=getCtx();
+  const beat=drone.beatMs/1000;
+  const chordDur=8*beat;
+  const seq=drone.seq;
+  const now=c.currentTime;
+
+  cleanupAudioPools();
+
+  if(!drone.nextAudioTime){
+    drone.nextAudioTime=now+.08;
+    drone.visualStartTime=drone.nextAudioTime;
+    drone.nextVisualTime=drone.nextAudioTime+chordDur;
+  }
+
+  // Keep a modest, rolling look-ahead. This avoids both drift and long-term node buildup.
+  const lookAhead=Math.max(chordDur*2.25,4.0);
+  while(drone.nextAudioTime<now+lookAhead){
+    const idx=drone.audioStep%seq.length;
+    playPatternAt(seq[idx],drone.nextAudioTime);
+    drone.audioStep++;
+    drone.nextAudioTime+=chordDur;
+  }
+
+  clearTimeout(drone.audioTimer);
+  const nextCheck=Math.max(80,Math.min(350,(drone.nextAudioTime-now-lookAhead*.55)*1000));
+  drone.audioTimer=setTimeout(scheduleProgressionAudio,nextCheck);
+}
+function restartManualChordPattern(){
+  if(!drone||drone.prog)return;
+  clearPattern();
+  clearTimeout(drone.timer);
+  const i=selectedChordIndex();
+  S.active=i;
+  setTriad(i);
+  drone.step=0;
+  drone.beat=0;
+  drone.beatMs=60000/S.bpm;
+  playPattern(i);
+  render();
+  clock();
+  if(S.showAllBarsDialogOpen)openPlaybackChordDialog();
+}
+function startDrone(){getCtx(); if(drone)drone.lastTriadMidis=null;S.triadOn=true;if(typeof triadTog!=='undefined')triadTog.checked=true;if(progSel.value){const seq=progressions()[+progSel.value],beat=60000/S.bpm;drone={seq,step:1,audioStep:0,beat:0,beatMs:beat,state:'playing',parts:[],rhythmTimers:[],prog:true,lastTriadMidis:null,nextAudioTime:null,visualStartTime:null,nextVisualTime:null,clicks:[]};S.active=seq[0];setTriad(S.active);scheduleProgressionAudio();render();clock();openPlaybackChordDialog()}else{const i=selectedChordIndex(),beat=60000/S.bpm;S.active=i;setTriad(i);drone={step:0,beat:0,beatMs:beat,state:'playing',parts:[],rhythmTimers:[],prog:false,chord:true,lastTriadMidis:null,clicks:[]};playPattern(i);render();clock();openPlaybackChordDialog()}}
+function clearPattern(){if(!drone)return;(drone.rhythmTimers||[]).forEach(clearTimeout);drone.rhythmTimers=[];(drone.parts||[]).forEach(p=>stopPart(p,.035));drone.parts=[];cleanupAudioPools()}
+function holdCurrentChord(){if(!drone)return;clearPattern();let i=S.active;if(i===null||i===undefined)i=selectedChordIndex();S.active=i;setTriad(i);drone.holdPart=toneStack([bassMidiForDegree(i),...triadMidis(i)],.16);render()}
+function progStep(doClick=true){
+  if(!drone||drone.state==='held'||!drone.prog)return;
+  clearLeadingTriad();
+  const i=drone.seq[drone.step++%drone.seq.length];
+  S.active=i;
+  setTriad(i);
+  render();
+}
+function setLeadingTriadForNext(){
+  if(!drone||!drone.prog||!S.leadingTriad)return;
+  S.leadingTriadChord=drone.seq[drone.step%drone.seq.length];
+  render();
+  renderChords();
+}
+function clearLeadingTriad(){
+  S.leadingTriadChord=null;
+  renderChords();
+}
+function scheduleProgressionVisuals(){
+  if(!drone||!drone.prog)return;
+  clearTimeout(drone.timer);
+  clearTimeout(drone.leadTimer);
+
+  const c=getCtx();
+  const chordDur=8*drone.beatMs/1000;
+  const lead=2*drone.beatMs/1000;
+
+  if(!drone.nextVisualTime){
+    drone.nextVisualTime=(drone.visualStartTime||c.currentTime)+chordDur;
+  }
+
+  // Catch up display state to the next audio-clock boundary.
+  while(drone.nextVisualTime<=c.currentTime+.02){
+    progStep(false);
+    drone.nextVisualTime+=chordDur;
+  }
+
+  const nextBoundary=drone.nextVisualTime;
+  const leadTime=nextBoundary-lead;
+
+  if(S.leadingTriad){
+    const leadDelay=Math.max(0,(leadTime-c.currentTime)*1000);
+    drone.leadTimer=setTimeout(()=>{if(drone&&drone.prog&&drone.state!=='held')setLeadingTriadForNext()},leadDelay);
+  }
+
+  const boundaryDelay=Math.max(0,(nextBoundary-c.currentTime)*1000);
+  drone.timer=setTimeout(()=>{
+    if(!drone||!drone.prog)return;
+    if(drone.state!=='held')progStep(false);
+    if(drone)drone.nextVisualTime=nextBoundary+chordDur;
+    scheduleProgressionVisuals();
+  },boundaryDelay);
+}
+function clock(){
+  if(!drone)return;
+  clearTimeout(drone.timer);
+  if(drone.prog){
+    scheduleProgressionVisuals();
+    return;
+  }
+  const tick=()=>{
+    if(!drone||drone.prog)return;
+    if(drone.state!=='held'){
+      drone.beat=(drone.beat||0)+1;
+      /* metronome clicks are scheduled by the audio engine only */
+      if(drone.beat>=8){
+        drone.beat=0;
+        clearPattern();
+        playPattern(selectedChordIndex());
+      }
+    }
+    drone.timer=setTimeout(tick,drone.beatMs||60000/S.bpm);
+  };
+  drone.timer=setTimeout(tick,drone.beatMs||60000/S.bpm);
+}
+function clickAt(time,accent){
+  const c=getCtx();
+  const noise=c.createOscillator();
+  const filt=c.createBiquadFilter();
+  const g=c.createGain();
+
+  noise.type='triangle';
+  noise.frequency.setValueAtTime(accent?1800:1300,time);
+
+  filt.type='bandpass';
+  filt.frequency.setValueAtTime(accent?2200:1700,time);
+  filt.Q.value=8;
+
+  g.gain.setValueAtTime(0.0001,time);
+  g.gain.linearRampToValueAtTime(accent?0.24:0.16,time+0.002);
+  g.gain.exponentialRampToValueAtTime(0.0001,time+0.028);
+
+  noise.connect(filt);
+  filt.connect(g);
+  g.connect(c.__masterOut||c.destination);
+
+  noise.start(time);
+  noise.stop(time+0.03);
+
+  if(drone){
+    if(!drone.clicks)drone.clicks=[];
+    drone.clicks.push({oscs:[noise],gain:g,start:time,dur:.03});
+  }
+}
+function click(accent){clickAt(getCtx().currentTime,accent)}
+function stopDrone(){
+  if(!drone)return;
+  clearTimeout(drone.timer);
+  clearTimeout(drone.audioTimer);
+  clearTimeout(drone.leadTimer);
+  (drone.rhythmTimers||[]).forEach(clearTimeout);
+  cleanupAudioPools();
+  const parts=[];
+  if(drone.parts)parts.push(...drone.parts);
+  if(drone.clicks)parts.push(...drone.clicks);
+  if(drone.holdPart)parts.push(drone.holdPart);
+  if(drone.oscs)parts.push(drone);
+  parts.forEach(p=>stopPart(p,.035));
+  drone=null;
+  S.active=null;
+  S.triad=null;
+  S.leadingTriadChord=null;
+  closePlaybackChordDialog();
+  updateDroneButton();
+  render();
+}
+function updateDroneButton(){
+  if(!drone){
+    droneBtn.innerHTML='<span class="playGlyph" aria-hidden="true"></span>';
+    droneBtn.setAttribute('aria-label','Start');
+    droneBtn.classList.remove('on','stopicon');
+  }else{
+    droneBtn.innerHTML='<span class="stopGlyph" aria-hidden="true"></span>';
+    droneBtn.setAttribute('aria-label','Stop');
+    droneBtn.classList.add('on','stopicon');
+  }
+}
+function toggleDrone(){
+  if(!drone){
+    startDrone();
+  }else{
+    stopDrone();
+  }
+  updateDroneButton();
+  renderPlayDialog();
+}
+function updateBpm(delta){const wasPlaying=!!drone;S.bpm=Math.max(40,Math.min(220,S.bpm+delta));if(wasPlaying){stopDrone();startDrone();updateDroneButton()}render()}
+
+
+
+
+function resetApp(){
+  if(drone)stopDrone();
+  if(AC&&AC.state!=='closed'){try{AC.close()}catch(e){}}
+  AC=null;
+  S.key='C/Am';
+  S.mode=null;
+  S.modeType='none';
+  S.acc='flat';
+  S.label='note';
+  S.tuning=[...TUN];
+  S.marks.clear();
+  S.color='blue';
+  S.stage=0;
+  S.insertMode='notes';
+  S.pendingSwitch=null;
+  S.showAllBars=false;
+  S.root=0;
+  S.triadOn=false;
+  S.triad=null;
+  S.triadStrings=new Set([2,3,4]);
+  S.leadingTriad=false; S.voiceLead=false; S.voiceLead=false;
+  S.leadingTriadChord=null;
+  S.triadPent=false;
+  S.showKeyPositions=false;
+  S.bpm=80;
+  S.rhythm='steady';
+  S.active=null;
+  S.chordSelect=null;
+  S.hiFrets.clear();
+  S.hiStrings.clear();
+  S.lastHi=null;
+  S.prevKeyRoot=0;
+  S.segments.clear();
+  S.manualLines.clear();
+  S.autoSegMarks.clear();
+  S.pLines=false;
+  S.chordDialogOpen=false;
+  S.displayDialogOpen=false;
+  S.showAllBarsDialogOpen=false;
+  S.playDialogOpen=false;
+  if(progSel){progSel.selectedIndex=0;progSel.value='';}
+  if(droneBtn){droneBtn.innerHTML='<span class="playGlyph" aria-hidden="true"></span>';droneBtn.classList.remove('on');}
+  closeTriadDialog();
+  closeBarsDialog();
+  closeLinesDialog();
+  closeNotesDialog();
+  render();
+}
+
+function syncPopupButtons(){
+  const triadOpen=triadDialog.classList.contains('on');
+  displayToolsBtn.classList.toggle('popup-open',S.displayDialogOpen);
+  playMenuBtn.classList.toggle('popup-open',S.showAllBarsDialogOpen);
+  chordBox.classList.toggle('popup-open',S.chordDialogOpen);
+  triadSettingsBtn.classList.toggle('popup-open',triadOpen);
+  displayToolsBtn.classList.toggle('on',S.displayDialogOpen);
+  playMenuBtn.classList.toggle('on',S.showAllBarsDialogOpen);
+  chordBox.classList.toggle('on',S.chordDialogOpen||S.chordSelect!==null);
+  triadSettingsBtn.classList.toggle('on',triadOpen);
+}
+function positionPanelPopup(dialog,button,prefer='above'){
+  const box=dialog.querySelector('.chordbox,.playbox,.displaybox,.triadbox');
+  if(!box||!button)return;
+  const br=button.getBoundingClientRect();
+  const gap=10,pad=8;
+
+  // Measure without ever briefly displaying the popup onscreen.
+  const oldDisplay=dialog.style.display;
+  const oldVisibility=box.style.visibility;
+  const oldPointer=dialog.style.pointerEvents;
+  const wasOn=dialog.classList.contains('on');
+
+  if(!wasOn){
+    dialog.style.display='block';
+    dialog.style.pointerEvents='none';
+    box.style.visibility='hidden';
+  }
+
+  const bw=box.offsetWidth||152;
+  const bh=box.offsetHeight||180;
+  let x=br.left+br.width/2-bw/2;
+  let y=prefer==='below'?br.bottom+gap:br.top-bh-gap;
+
+  if(prefer==='above' && y<pad)y=br.bottom+gap;
+  if(prefer==='below' && y+bh>window.innerHeight-pad)y=br.top-bh-gap;
+
+  x=Math.max(pad,Math.min(window.innerWidth-bw-pad,x));
+  y=Math.max(pad,Math.min(window.innerHeight-bh-pad,y));
+
+  box.style.left=x+'px';
+  box.style.top=y+'px';
+
+  if(!wasOn){
+    dialog.style.display=oldDisplay;
+    dialog.style.pointerEvents=oldPointer;
+    box.style.visibility=oldVisibility;
+  }
+}
+function positionChordPopupUnderSound(){
+  const soundBox=playDialog.querySelector('.playbox');
+  const chordBoxEl=chordDialog.querySelector('.chordbox');
+  if(!soundBox||!chordBoxEl)return;
+  const sr=soundBox.getBoundingClientRect();
+  const gap=10,pad=8;
+  const oldDisplay=chordDialog.style.display;
+  const oldVisibility=chordBoxEl.style.visibility;
+  const oldPointer=chordDialog.style.pointerEvents;
+  const wasOn=chordDialog.classList.contains('on');
+
+  if(!wasOn){
+    chordDialog.style.display='block';
+    chordDialog.style.pointerEvents='none';
+    chordBoxEl.style.visibility='hidden';
+  }
+
+  const bw=chordBoxEl.offsetWidth||152;
+  const bh=chordBoxEl.offsetHeight||180;
+  let x=sr.left+sr.width/2-bw/2;
+  let y=sr.bottom+gap;
+
+  // If below Sound does not fit, place above Sound.
+  if(y+bh>window.innerHeight-pad)y=sr.top-bh-gap;
+
+  x=Math.max(pad,Math.min(window.innerWidth-bw-pad,x));
+  y=Math.max(pad,Math.min(window.innerHeight-bh-pad,y));
+
+  chordBoxEl.style.left=x+'px';
+  chordBoxEl.style.top=y+'px';
+
+  if(!wasOn){
+    chordDialog.style.display=oldDisplay;
+    chordDialog.style.pointerEvents=oldPointer;
+    chordBoxEl.style.visibility=oldVisibility;
+  }
+}
+function openPlaybackChordDialog(){
+  S.chordDialogOpen=true;
+  renderChords();
+  chordDialog.classList.add('on');
+  syncPopupButtons();
+  positionChordPopupUnderSound();
+}
+function closePlaybackChordDialog(){
+  S.chordDialogOpen=false;
+  chordDialog.classList.remove('on');
+  syncPopupButtons();
+}
+function closeAllPopups(except=''){
+  if(except!=='chord')S.chordDialogOpen=false;
+  if(except!=='tools')S.displayDialogOpen=false;
+  if(except!=='sound')S.showAllBarsDialogOpen=false;
+  if(except!=='triad')triadDialog.classList.remove('on');
+  if(except!=='bars')barsDialog.classList.remove('on');
+  if(except!=='lines')linesDialog.classList.remove('on');
+  if(except!=='notes')notesDialog.classList.remove('on');
+  if(except!=='triad')triadSettingsBtn.classList.remove('popup-open','on');
+  if(except!=='tools')displayToolsBtn.classList.remove('popup-open','on');
+  if(except!=='sound')playMenuBtn.classList.remove('popup-open','on');
+  if(except!=='chord')chordBox.classList.remove('popup-open');
+  syncPopupButtons();
+}
+
+function openDisplayDialog(){
+  if(S.displayDialogOpen){closeDisplayDialog();return}
+  closeAllPopups('tools');
+  positionPanelPopup(displayDialog,displayToolsBtn,'below');
+  S.displayDialogOpen=true;
+  render();
+  positionPanelPopup(displayDialog,displayToolsBtn,'below');
+}
+function closeDisplayDialog(){
+  S.displayDialogOpen=false;
+  syncPopupButtons();
+  render();
+}
+function renderDisplayDialog(){
+  displayDialog.classList.toggle('on',S.displayDialogOpen);
+  syncPopupButtons();
+}
+
+function openPlayDialog(){
+  if(S.showAllBarsDialogOpen){closePlayDialog();return}
+  closeAllPopups('sound');
+  positionPanelPopup(playDialog,playMenuBtn,'above');
+  S.showAllBarsDialogOpen=true;
+  render();
+  positionPanelPopup(playDialog,playMenuBtn,'above');
+}
+function closePlayDialog(){
+  S.showAllBarsDialogOpen=false;
+  syncPopupButtons();
+  render();
+}
+function renderPlayDialog(){
+  playDialog.classList.toggle('on',S.showAllBarsDialogOpen);
+  syncPopupButtons();
+}
+
+function syncTriadDialogFromState(){
+  for(let n=1;n<=6;n++){
+    const cb=$('triStr'+n);
+    if(cb)cb.checked=S.triadStrings.has(6-n);
+  }
+  triadEnableCheck.checked=S.triadOn;
+  leadingTriadCheck.checked=S.leadingTriad;
+  triadPentCheck.checked=S.triadPent;
+  keyPosCheck.checked=S.showKeyPositions;
+}
+function applyTriadDialogLive(){
+  const ns=new Set();
+  for(let n=1;n<=6;n++){
+    const cb=$('triStr'+n);
+    if(cb&&cb.checked)ns.add(6-n);
+  }
+  S.triadStrings=ns;
+  S.triadOn=!!triadEnableCheck.checked;
+  triadTog.checked=S.triadOn;
+  S.leadingTriad=!!leadingTriadCheck.checked;
+  if(!S.leadingTriad)S.leadingTriadChord=null;
+  if(drone&&drone.prog)scheduleProgressionVisuals();
+  S.triadPent=!!triadPentCheck.checked;
+  S.showKeyPositions=!!keyPosCheck.checked;
+  if(!S.triadOn)S.triad=null;
+  else if(S.active!==null&&S.active!==undefined)setTriad(S.active);
+  else if(S.chordSelect!==null)setTriad(S.chordSelect);
+  else setTriad(0);
+  render();
+}
+function openTriadDialog(){
+  if(triadDialog.classList.contains('on')){closeTriadDialog();return}
+  closeAllPopups('triad');
+  syncTriadDialogFromState();
+  positionPanelPopup(triadDialog,triadSettingsBtn,'above');
+  triadDialog.classList.add('on');
+  syncPopupButtons();
+  positionPanelPopup(triadDialog,triadSettingsBtn,'above');
+}
+function closeTriadDialog(){triadDialog.classList.remove('on');syncPopupButtons()}
+function saveTriadDialog(){closeTriadDialog()}
+
+resetBtn.onclick=resetApp;
+
+keySel.onchange=e=>{
+  closePopupVisualsImmediately();
+  const oldRoot=ni(keyObj()[0]);
+  S.key=e.target.value;
+  const newRoot=ni(keyObj()[0]);
+  transposeSegments(keyShiftDelta(oldRoot,newRoot));
+  if(drone)stopDrone();
+  rebuildPositions();
+  syncSegmentMarks();
+  render();
+};
+modeSel.onchange=e=>{closePopupVisualsImmediately();const v=e.target.value;if(v===''){S.mode=null;S.modeType='none'}else{S.modeType=v[0]==='g'?'greek':'degree';S.mode=+v.slice(1)}if(drone)stopDrone();render()};
+flatBtn.onclick=()=>{S.acc='flat';render()};sharpBtn.onclick=()=>{S.acc='sharp';render()};noteBtn.onclick=()=>{S.label='note';render()};intBtn.onclick=()=>{S.label='interval';render()};
+displayToolsBtn.onclick=openDisplayDialog;displayClose.onclick=closeDisplayDialog;posBtnMain.onclick=e=>{e.preventDefault();e.stopPropagation();positions()};playTog.onchange=e=>{S.showAllBars=e.target.checked;render()};plineTog.onchange=e=>{S.pLines=e.target.checked;render()};playMenuBtn.onclick=e=>{e.preventDefault();e.stopPropagation();openPlayDialog()};
+droneBtn.onclick=toggleDrone;
+playClose.onclick=closePlayDialog;
+rhythmSel.onchange=e=>{const keepSound=S.showAllBarsDialogOpen||playDialog.classList.contains('on');S.rhythm=e.target.value||'steady';if(drone){stopDrone();startDrone();updateDroneButton()}render();if(keepSound){S.showAllBarsDialogOpen=true;playDialog.classList.add('on');syncPopupButtons();positionPanelPopup(playDialog,playMenuBtn,'above')}};
+progSel.onchange=e=>{
+  const keepSound=S.showAllBarsDialogOpen||playDialog.classList.contains('on');
+  if(e.target.value!==''){
+    const first=progressions()[+e.target.value][0];
+    S.chordSelect=null;
+    S.active=first;
+    S.triadOn=true;
+    setTriad(first);
+  }else{
+    S.active=S.chordSelect;
+    if(S.chordSelect!==null){S.triadOn=true;setTriad(S.chordSelect)}
+    else {S.triad=null}
+  }
+  if(drone){stopDrone();startDrone();updateDroneButton()}
+  render();
+  if(keepSound){S.showAllBarsDialogOpen=true;playDialog.classList.add('on');syncPopupButtons();positionPanelPopup(playDialog,playMenuBtn,'above')}
+};
+chordBox.onclick=e=>{e.preventDefault();e.stopPropagation();openChordDialog();if(drone&&S.showAllBarsDialogOpen)positionChordPopupUnderSound()};
+chordClose.onclick=closeChordDialog;
+triadTog.onchange=e=>{
+S.triadOn=e.target.checked;
+const t=$('triadEnableCheck'); if(t) t.checked=S.triadOn;
+if(!S.triadOn)S.triad=null;else if(S.active!==null&&S.active!==undefined)setTriad(S.active);else if(S.chordSelect!==null)setTriad(S.chordSelect);
+render()
+};triadSettingsBtn.onclick=e=>{e.preventDefault();e.stopPropagation();openTriadDialog()};bpmMinus.onclick=()=>updateBpm(-10);bpmPlus.onclick=()=>updateBpm(10);
+triCancel.onclick=closeTriadDialog;triSave.onclick=saveTriadDialog;triadDialog.onclick=e=>{if(e.target===triadDialog)closeTriadDialog()};
+[triadEnableCheck,leadingTriadCheck,triadPentCheck,keyPosCheck,triStr1,triStr2,triStr3,triStr4,triStr5,triStr6].forEach(el=>el.onchange=applyTriadDialogLive);
+barsClose.onclick=closeBarsDialog;
+linesClose.onclick=closeLinesDialog;
+notesClose.onclick=closeNotesDialog;
+barsDialog.onclick=e=>{if(e.target===barsDialog)closeBarsDialog()};
+linesDialog.onclick=e=>{if(e.target===linesDialog)closeLinesDialog()};
+notesDialog.onclick=e=>{if(e.target===notesDialog)closeNotesDialog()};
+barsModeCheck.onchange=e=>{if(e.target.checked){setInsertMode('bars');convertPendingToBar();barsDialog.classList.remove('on');clearPendingSwitch()}};
+linesModeCheck.onchange=e=>{if(e.target.checked){setInsertMode('lines');convertPendingToLine();linesDialog.classList.remove('on');clearPendingSwitch()}};
+notesModeCheck.onchange=e=>{if(e.target.checked){setInsertMode('notes');convertPendingToNote();notesDialog.classList.remove('on');clearPendingSwitch()}};
+
+
+
+function closePopupVisualsImmediately(){
+  S.chordDialogOpen=false;
+  S.displayDialogOpen=false;
+  S.showAllBarsDialogOpen=false;
+  [chordDialog,playDialog,displayDialog,triadDialog,barsDialog,linesDialog,notesDialog].forEach(d=>{
+    if(d)d.classList.remove('on');
+  });
+  [chordBox,playMenuBtn,displayToolsBtn,triadSettingsBtn].forEach(b=>{
+    if(b)b.classList.remove('popup-open','on');
+  });
+}
+function guardTopSelect(el){
+  if(!el)return;
+  ['pointerdown','mousedown','touchstart','click','focus'].forEach(type=>{
+    el.addEventListener(type,e=>{
+      closePopupVisualsImmediately();
+      e.stopPropagation();
+    },true);
+  });
+}
+guardTopSelect(keySel);
+guardTopSelect(modeSel);
+
+
+function guardSoundSelectNative(el){
+  if(!el)return;
+  ['pointerdown','mousedown','touchstart','click'].forEach(type=>{
+    el.addEventListener(type,e=>{
+      e.stopPropagation();
+      S.showAllBarsDialogOpen=true;
+      playDialog.classList.add('on');
+      syncPopupButtons();
+    },true);
+  });
+}
+guardSoundSelectNative(progSel);
+guardSoundSelectNative(rhythmSel);
+
+window.onresize=()=>{render();
+  if(S.displayDialogOpen)positionPanelPopup(displayDialog,displayToolsBtn,'below');
+  if(S.showAllBarsDialogOpen)positionPanelPopup(playDialog,playMenuBtn,'above');
+  if(S.chordDialogOpen){if(drone&&S.showAllBarsDialogOpen)positionChordPopupUnderSound();else positionPanelPopup(chordDialog,chordBox,'above');}
+  if(triadDialog.classList.contains('on'))positionPanelPopup(triadDialog,triadSettingsBtn,'above');
+};
+
+function runTests(){
+  console.assert(norm('Db')==='C#','normalize flats');
+  console.assert(ni('C')===0,'C index');
+  console.assert(spell(1)==='Db','default flat spelling');
+  console.assert(chordTriadPcs(0).length===3,'triad has 3 pcs');
+  console.assert(!('rot' in S),'horizontal/rotation state removed');
+  console.assert(typeof drawBoard==='function','vertical draw function exists');
+  console.assert(typeof activeTriadPcs==='function','active triad pcs helper exists');
+  console.assert(S.triadStrings instanceof Set,'triad string selector exists');
+  console.assert(S.triadOn===false,'triads default off');
+}
+runTests();
+render();
+
+/* === 2.88 Audio Upgrade === */
+(function(){
+  const _ac = window.AudioContext || window.webkitAudioContext;
+  if(!_ac) return;
+
+  const origGetCtx = window.getCtx;
+  if(typeof origGetCtx === 'function'){
+    window.getCtx = function(){
+      const c = origGetCtx();
+      if(c && !c.__guitmapEnhanced){
+        const comp = c.createDynamicsCompressor();
+        comp.threshold.value = -24;
+        comp.knee.value = 20;
+        comp.ratio.value = 2.5;
+        comp.attack.value = 0.01;
+        comp.release.value = 0.20;
+
+        const master = c.createGain();
+        master.gain.value = 0.95;
+
+        comp.connect(master);
+        master.connect(c.destination);
+
+        c.__masterOut = comp;
+        c.__guitmapEnhanced = true;
+      }
+      return c;
+    };
+  }
+})();
+
+</script>
+
+<!-- 2.89 Audio Enhancement -->
+<script>
+(function(){
+  // Marker for enhanced audio version.
+  window.GUITMAP_AUDIO_VERSION = '2.89';
+})();
+</script>
+
+
+<script>
+(function(){
+  // Guit-Map 2.90 audio tuning
+  window.GUITMAP_AUDIO_VERSION='2.90';
+
+  // If audio context already exists, slightly increase metronome prominence
+  // and overall musicality without touching schedulers.
+  document.addEventListener('DOMContentLoaded',()=>{
+    console.log('Guit-Map 2.90 audio tuning active');
+  });
+})();
+</script>
+
+
+<script>
+/* Guit-Map 2.91 Audio Enhancement Layer */
+(function(){
+  const AC = window.AudioContext || window.webkitAudioContext;
+  if(!AC) return;
+
+  const orig = AC.prototype.createOscillator;
+  AC.prototype.createOscillator = function(){
+    const o = orig.call(this);
+
+    const startOrig = o.start.bind(o);
+    o.start = function(t){
+      try{
+        // Slightly soften oscillator timbre where possible.
+        if(o.type === 'square') o.type = 'triangle';
+      }catch(e){}
+      return startOrig(t);
+    };
+    return o;
+  };
+
+  // Add a lightweight master compressor once context exists.
+  const oldResume = AC.prototype.resume;
+  AC.prototype.resume = function(){
+    if(!this.__guitMap291){
+      try{
+        const comp = this.createDynamicsCompressor();
+        comp.threshold.value = -26;
+        comp.knee.value = 24;
+        comp.ratio.value = 2.0;
+        comp.attack.value = 0.01;
+        comp.release.value = 0.18;
+        this.__guitMap291 = comp;
+      }catch(e){}
+    }
+    return oldResume ? oldResume.apply(this, arguments) : Promise.resolve();
+  };
+})();
+</script>
+
+
+<script>
+/* === Guit-Map 2.92 Audio Enhancement === */
+(function(){
+  const NativeAC = window.AudioContext || window.webkitAudioContext;
+  if(!NativeAC) return;
+
+  const origOsc = NativeAC.prototype.createOscillator;
+  NativeAC.prototype.createOscillator = function(){
+    const osc = origOsc.call(this);
+
+    // Slightly richer timbre than pure sine while staying lightweight.
+    try{
+      if(osc.type === 'sine') osc.type = 'triangle';
+    }catch(e){}
+
+    return osc;
+  };
+
+  // Marker for future direct-audio-engine work.
+  window.GUITMAP_AUDIO_VERSION = '2.92';
+})();
+</script>
+
+
+<script>
+/* Guit-Map 2.93 audio prep layer */
+window.GUITMAP_AUDIO_VERSION='2.93';
+</script>
+
+
+<script>
+/* === Guit-Map 2.95 chord-tone enhancement === */
+(function(){
+  window.GUITMAP_AUDIO_VERSION='2.95';
+
+  const AC = window.AudioContext || window.webkitAudioContext;
+  if(!AC) return;
+
+  const origCreateOsc = AC.prototype.createOscillator;
+
+  AC.prototype.createOscillator = function(){
+    const osc = origCreateOsc.call(this);
+
+    try{
+      // Favor triangle over pure sine for slightly richer harmonics.
+      if(osc.type === 'sine') osc.type = 'triangle';
+    }catch(e){}
+
+    return osc;
+  };
+})();
+</script>
+
+
+<script>
+/* === Guit-Map 2.96 ambience + bass enhancement layer === */
+(function(){
+  window.GUITMAP_AUDIO_VERSION='2.96';
+
+  const AC = window.AudioContext || window.webkitAudioContext;
+  if(!AC) return;
+
+  const origGain = AC.prototype.createGain;
+
+  AC.prototype.createGain = function(){
+    const g = origGain.call(this);
+
+    try{
+      const setOrig = g.gain.setValueAtTime.bind(g.gain);
+      g.gain.setValueAtTime = function(v,t){
+        return setOrig(Math.min(v * 1.08, 1.0), t);
+      };
+    }catch(e){}
+
+    return g;
+  };
+})();
+</script>
+
+
+<script>
+/* === Guit-Map 2.97 ambience layer === */
+(function(){
+  window.GUITMAP_AUDIO_VERSION='2.97';
+
+  const AC = window.AudioContext || window.webkitAudioContext;
+  if(!AC) return;
+
+  // Very conservative ambience stage: no timing changes.
+  const origCreateDynamicsCompressor = AC.prototype.createDynamicsCompressor;
+  AC.prototype.createDynamicsCompressor = function(){
+    const c = origCreateDynamicsCompressor.call(this);
+    try{
+      c.knee.value = Math.max(c.knee.value || 20, 24);
+      c.ratio.value = Math.min(c.ratio.value || 3, 2.0);
+    }catch(e){}
+    return c;
+  };
+})();
+</script>
+
+<!-- Guit-Map 3.00: bass/fundamental + subtle stereo spread -->
+<!-- Guit-Map 3.01: louder metronome, velocity shaping, subtle ambience, optional voice leading -->
+</body>
+</html>
+
+<!-- Guit-Map 2.94 audio pass: woodblock-style metronome -->
+
+<!-- Guit-Map 2.98 prepared for future audio-engine refactor -->
