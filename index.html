@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>GuitMap</title>
+<title>Fretboard 3.57</title>
 <style>
 :root{
   --board-w:183px;
@@ -2364,7 +2364,7 @@ html, body, body *{
 .scaleIcon circle{fill:#39a85a!important;}
 
 
-/* === Guit-Map 4.18.5: persistent idle-fretboard label cycling === */
+/* === Guit-Map 4.18.8: Dropbox/iOS bounce suppression === */
 .tuning-popup button,
 .tuning-popup .tuner-note,
 .tuning-popup .tuning-title,
@@ -2676,6 +2676,166 @@ html, body, body *{
   border:1px solid rgba(255,255,255,.72)!important;
   box-shadow:0 2px 6px rgba(0,0,0,.24)!important;
 }
+
+/* === Guit-Map 4.18.9: Scale overlay coexists with jiggle triads === */
+html,body{
+  width:100%!important;
+  height:100%!important;
+  margin:0!important;
+  padding:0!important;
+  overflow:hidden!important;
+  overscroll-behavior:none!important;
+  -webkit-overflow-scrolling:auto!important;
+}
+body{
+  position:fixed!important;
+  inset:0!important;
+  touch-action:manipulation!important;
+}
+
+/* === Guit-Map 4.19.0: random diatonic triad test === */
+.triadStringPopup{width:250px!important}
+.triadTestRow{
+  display:grid!important;
+  grid-template-columns:1.7fr repeat(4,1fr)!important;
+  gap:6px!important;
+  margin-top:10px!important;
+}
+#triadTestBtn,.triadDelayChoice{
+  min-height:38px!important;
+  border:1px solid rgba(255,255,255,.32)!important;
+  border-radius:8px!important;
+  background:rgba(255,255,255,.07)!important;
+  color:#fff!important;
+  font-size:15px!important;
+  font-weight:800!important;
+}
+#triadTestBtn{color:#39a85a!important}
+.triadDelayChoice.selected{
+  border-color:#39a85a!important;
+  background:rgba(57,168,90,.28)!important;
+  color:#fff!important;
+}
+
+/* === Guit-Map 4.19.1: clearer timed triad test === */
+.triadChordPopup.triadTestPrompt{
+  font-size:54px!important;
+  min-width:76px!important;
+  padding:8px 16px!important;
+  line-height:1!important;
+}
+.triadChordPopup.triadTestPrompt.triadTestFlashOff{
+  opacity:.16!important;
+}
+
+/* === Guit-Map 4.19.3: framed pulse + metronome triad test === */
+.triadChordPopup.triadTestPrompt{
+  position:absolute!important;
+  pointer-events:auto!important;
+  touch-action:manipulation!important;
+  cursor:pointer!important;
+  opacity:1!important;
+  color:#fff!important;
+  border-color:rgba(255,255,255,.92)!important;
+  box-shadow:0 0 0 1px rgba(255,255,255,.10)!important;
+}
+.triadChordPopup.triadTestPrompt.manualWaiting{
+  border:2px solid #39a85a!important;
+  box-shadow:0 0 0 2px rgba(57,168,90,.20),0 0 12px rgba(57,168,90,.42)!important;
+}
+.triadChordPopup.triadTestPrompt.manualWaiting::after{
+  content:'READY';
+  position:absolute;
+  right:5px;
+  top:3px;
+  font-size:7px;
+  line-height:1;
+  letter-spacing:.7px;
+  color:#39a85a;
+  font-weight:800;
+}
+.triadChordPopup.triadTestPrompt.triadTestFlashOff{
+  opacity:1!important;
+  color:rgba(255,255,255,.20)!important;
+  border-color:rgba(255,255,255,.18)!important;
+  box-shadow:none!important;
+}
+
+/* === Guit-Map 4.19.4: meter + tempo triad test === */
+.triadTestLabel{
+  color:rgba(255,255,255,.72)!important;
+  font-size:11px!important;
+  font-weight:700!important;
+  margin-top:9px!important;
+  margin-bottom:4px!important;
+  text-align:left!important;
+}
+.triadMeterRow{
+  grid-template-columns:1.45fr repeat(3,1fr)!important;
+  margin-top:0!important;
+}
+.triadTempoRow{
+  display:grid!important;
+  grid-template-columns:repeat(4,1fr)!important;
+  gap:6px!important;
+}
+#triadTestBtn,.triadMeterChoice,.triadTempoChoice{
+  min-height:38px!important;
+  border:1px solid rgba(255,255,255,.32)!important;
+  border-radius:8px!important;
+  background:rgba(255,255,255,.07)!important;
+  color:#fff!important;
+  font-size:14px!important;
+  font-weight:800!important;
+}
+#triadTestBtn{color:#39a85a!important}
+.triadProgressionRow{
+  display:flex;align-items:center;gap:6px;margin:3px 0 6px;
+}
+#triadProgressionSelect{
+  flex:1;min-width:0;background:rgba(15,24,36,.88);color:#f6f9ff;
+  border:1px solid rgba(190,208,232,.28);border-radius:7px;
+  font-size:11px;padding:5px 4px;
+}
+.triadManualChoice{
+  display:flex;align-items:center;gap:3px;color:#f6f9ff;
+  font-size:11px;white-space:nowrap;
+}
+.triadManualChoice input{accent-color:#39a85a}
+.triadMeterChoice.selected,.triadTempoChoice.selected{
+  border-color:#39a85a!important;
+  background:rgba(57,168,90,.28)!important;
+}
+
+/* === Guit-Map 4.19.9: beat position shown directly on the nut === */
+#nutBeatIndicator{
+  display:none;
+  position:absolute;
+  z-index:65;
+  pointer-events:none;
+  background:#39a85a;
+  border-radius:2px;
+  box-shadow:0 0 5px rgba(57,168,90,.72);
+}
+
+#infoBtn .infoIcon{
+  display:block;
+  color:#39a85a;
+  font-family:Arial,sans-serif!important;
+  font-size:22px!important;
+  font-weight:700!important;
+  font-style:normal!important;
+  line-height:1!important;
+  text-shadow:none!important;
+  transform:translateY(-1px);
+}
+#infoBtn.infoOn{
+  border-color:rgba(112,178,255,.55)!important;
+  box-shadow:inset 0 0 0 1px rgba(112,178,255,.85),0 0 10px rgba(74,163,255,.18)!important;
+}
+#infoHelpCard{display:none;position:fixed;z-index:10050;left:50%;bottom:18px;transform:translateX(-50%);width:min(86vw,360px);box-sizing:border-box;padding:10px 12px;border-radius:10px;background:rgba(15,23,34,.94);color:#f6f9ff;border:1px solid rgba(214,230,255,.30);box-shadow:0 10px 30px rgba(0,0,0,.38);font-size:12px;line-height:1.35;text-align:left;pointer-events:none}
+#infoHelpCard.show{display:block}
+#infoHelpCard b{font-weight:700}
 </style>
 </head>
 <body>
@@ -2761,13 +2921,13 @@ html, body, body *{
             <circle cx="26" cy="11" r="3.5"></circle>
             <path d="M13 22 L23 14"></path>
           </svg>
-        </button>
+        </button><button id="infoBtn" class="editmodebtn" type="button" aria-label="Information"><span class="infoIcon">i</span></button>
       </div>
       <div class="leftSpacer" aria-hidden="true"></div>
       <button id="displayToolsBtn" class="resetbtn displaytoolsbtn" type="button">Tools</button>
       <button id="resetBtn" class="resetbtn" type="button">Reset</button>
     </div>
-    <div class="maincol"><div class="wrap"><div id="shell" class="shell"><div id="openrow" class="openrow"></div>
+    <div class="maincol"><div class="wrap"><div id="shell" class="shell"><div id="nutBeatIndicator" aria-hidden="true"></div><div id="openrow" class="openrow"></div>
         <div class="nut"></div><div id="board" class="board"></div><div id="triadChordPopup" class="triadChordPopup" aria-live="polite"></div><div id="intervalLabelPopup" class="intervalLabelPopup" aria-live="polite"></div><div id="intervalTestPrompt" class="intervalTestPrompt" aria-live="polite"></div><div id="intervalPopup" class="intervalPopup" role="dialog" aria-label="Choose intervals">
   <div class="intervalPopupTitle">Interval</div>
   <div class="intervalPopupList">
@@ -2792,6 +2952,55 @@ html, body, body *{
     <button type="button" class="triadStringChoice selected" data-triad-set="1">2–3–4</button>
     <button type="button" class="triadStringChoice" data-triad-set="2">3–4–5</button>
     <button type="button" class="triadStringChoice" data-triad-set="3">4–5–6</button>
+  </div>
+  <div class="triadTestLabel">Test</div>
+  <div class="triadProgressionRow">
+    <select id="triadProgressionSelect" aria-label="Triad test progression">
+      <optgroup label="Random">
+        <option value="random">Random triads</option>
+        <option value="mixed">Mixed phrases</option>
+      </optgroup>
+      <optgroup label="Diatonic">
+        <option value="1451">1–4–5–1</option>
+        <option value="1645">1–6–4–5</option>
+        <option value="1564">1–5–6–4</option>
+        <option value="1465">1–4–6–5</option>
+        <option value="6415">6–4–1–5</option>
+      </optgroup>
+      <optgroup label="Cycle">
+        <option value="251">2–5–1</option>
+        <option value="6251">6–2–5–1</option>
+        <option value="36251">3–6–2–5–1</option>
+      </optgroup>
+      <optgroup label="Secondary V">
+        <option value="1V2_2_5">1–V/2–2–5</option>
+        <option value="1V4_4_5">1–V/4–4–5</option>
+        <option value="1V5_5_1">1–V/5–5–1</option>
+        <option value="1V6_6_2_5">1–V/6–6–2–5</option>
+        <option value="1V6_6_V5_5">1–V/6–6–V/5–5</option>
+      </optgroup>
+      <optgroup label="Borrowed">
+        <option value="14m1">1–4–4m–1</option>
+        <option value="1b741">1–♭7–4–1</option>
+        <option value="1b641">1–♭6–4–1</option>
+        <option value="1b3_4_1">1–♭3–4–1</option>
+      </optgroup>
+    </select>
+    <label class="triadManualChoice"><input type="checkbox" id="triadManualCheck"> Manual</label>
+  </div>
+  <div class="triadTestLabel">Meter</div>
+  <div class="triadTestRow triadMeterRow" aria-label="Triad test time signature">
+    <button id="triadTestBtn" type="button">Test</button>
+    <button type="button" class="triadMeterChoice" data-beats="2">2/4</button>
+    <button type="button" class="triadMeterChoice" data-beats="3">3/4</button>
+    <button type="button" class="triadMeterChoice selected" data-beats="4">4/4</button>
+  </div>
+  <div class="triadTestLabel">Tempo</div>
+  <div class="triadTempoRow" aria-label="Triad test tempo">
+    <button type="button" class="triadTempoChoice" data-tempo="40">40</button>
+    <button type="button" class="triadTempoChoice" data-tempo="50">50</button>
+    <button type="button" class="triadTempoChoice" data-tempo="65">65</button>
+    <button type="button" class="triadTempoChoice selected" data-tempo="80">80</button>
   </div>
 </div></div></div></div>
 <div id="tuningOverlay" class="tuning-overlay" aria-hidden="true">
@@ -2867,7 +3076,7 @@ const BASE_MIDI=[40,45,50,55,59,64];
 
 const S={
   key:'C/Am',mode:null,modeType:'none',acc:'sharp',label:'interval',tuning:[...TUN],tuningMidi:[...STANDARD_TUNING],tuningTapAvailable:true,
-  marks:new Map(),stage:0,pentBox:0,pentBoxFill:false,cagedOn:false,cagedChord:0,cagedPos:0,cagedHarmonyMode:false,cagedRegionCenter:null,cagedHarmonyAnchor:null,fixedBox1:false,fixedBox2:false,fixedBox3:false,fixedBox4:false,fixedBox5:false,fixedBoxFill1:false,fixedBoxFill2:false,fixedBoxFill3:false,fixedBoxFill4:false,fixedBoxFill5:false,triadExperimentOn:false,triadExperimentChord:0,triadStringSet:1,intervalMode:false,intervals:new Set(),intervalBaseMarks:null,intervalTest:false,intervalTestAnchor:null,intervalTestCorrect:null,intervalTestPromptPc:null,intervalTestTimer:null,insertMode:'notes',allNotes:false,pendingSwitch:null,showAllBars:false,root:0,triadOn:false,triad:null,
+  marks:new Map(),stage:0,pentBox:0,pentBoxFill:false,cagedOn:false,cagedChord:0,cagedPos:0,cagedHarmonyMode:false,cagedRegionCenter:null,cagedHarmonyAnchor:null,fixedBox1:false,fixedBox2:false,fixedBox3:false,fixedBox4:false,fixedBox5:false,fixedBoxFill1:false,fixedBoxFill2:false,fixedBoxFill3:false,fixedBoxFill4:false,fixedBoxFill5:false,triadExperimentOn:false,triadExperimentChord:0,triadStringSet:1,triadTest:false,triadTestBeats:4,triadTestTempo:80,triadTestTimer:null,triadTestFlashTimer:null,triadTestMetroTimer:null,triadTestBeat:0,triadTestNextChord:null,triadTestLastChord:null,triadTestIntro:true,triadTestIntroBeat:0,triadTestScaleStage:0,triadTestScaleMarks:null,triadTestSource:'random',triadTestManual:false,triadTestManualAdvance:false,triadTestManualPreview:false,triadTestProgressIndex:0,triadTestMixedPhrase:null,triadTestMixedIndex:0,triadTestChordSpec:null,intervalMode:false,intervals:new Set(),intervalBaseMarks:null,intervalTest:false,intervalTestAnchor:null,intervalTestCorrect:null,intervalTestPromptPc:null,intervalTestTimer:null,insertMode:'notes',allNotes:false,pendingSwitch:null,showAllBars:false,root:0,triadOn:false,triad:null,
   triadStrings:new Set([2,3,4]),leadingTriad:false,leadingTriadChord:null,triadPent:false,
   active:null,chordSelect:null,hiFrets:new Set(),hiStrings:new Set(),lastHi:null,
   prevKeyRoot:0,segments:new Set(),manualLines:new Set(),autoSegMarks:new Set(),pLines:false,chordDialogOpen:false,displayDialogOpen:false
@@ -3169,7 +3378,7 @@ function drawBoard(){
     }
 
     o.style.left=x+'px';
-    o.textContent=(openMark&&openMark.t!==undefined&&openMark.t!==null&&openMark.t!=='')?openMark.t:(openMark?dotText(i,0):noteAt(i,0));
+    o.textContent=openMark?displayMarkText(openMark):noteAt(i,0);
     orow.appendChild(o);
   });
   for(let f=1;f<=TOTAL_FRETS;f++){const d=document.createElement('div');d.className='fret';d.style.top=F[f]-1.5+'px';bd.appendChild(d)}
@@ -3196,6 +3405,20 @@ function toggleStringHighlight(s){S.hiStrings.has(s)?S.hiStrings.delete(s):S.hiS
 function toggleFretHighlight(f){if(S.lastHi!==null&&S.lastHi!==f){const a=Math.min(S.lastHi,f),b=Math.max(S.lastHi,f);for(let x=a;x<=b;x++)S.hiFrets.add(x);S.lastHi=null;return}if(S.hiFrets.has(f)){S.hiFrets.delete(f);S.lastHi=null}else{S.hiFrets.add(f);S.lastHi=f}}
 function showInHighlight(s,f){return (!S.hiFrets.size||S.hiFrets.has(f))&&(!S.hiStrings.size||S.hiStrings.has(s))}
 
+
+function displayMarkText(m){
+ // Temporary test prompt marks need their explicit note-name label.
+ if(m.c==='intervalTestAnchor' && m.t)return m.t;
+
+ // CAGED/triad chord-tone labels are semantic and should remain explicit.
+ // Everything else follows the persistent fretboard label mode.
+ if(S.cagedOn && m.t)return m.t;
+
+ if(S.label==='blank')return '';
+ if(S.label==='note')return noteAt(m.s,m.f);
+ return intervalDotText(m.s,m.f);
+}
+
 function renderMarks(X,F){
   renderPentLines(X,F);renderManualLines(X,F);renderChordRings(X,F);renderSegments(X,F);renderTriadPentDots(X,F);
   for(const m of S.marks.values()){
@@ -3203,7 +3426,7 @@ function renderMarks(X,F){
     const cx=X[m.s],cy=(F[m.f-1]+F[m.f])/2;
     const d=document.createElement('div');d.className='mark '+m.c+(m.triadSlowFlash?' triadSlowFlash':'')+(pcAt(m.s,m.f)===S.root&&!m.noEmphasis?' root':'');
     if(!m.noEmphasis)addChromaticShape(d,pcAt(m.s,m.f));
-    d.style.left=cx+'px';d.style.top=cy+'px';d.textContent=(m.t!==undefined&&m.t!==null&&m.t!=='')?m.t:dotText(m.s,m.f);d.onclick=e=>{e.stopPropagation();press(m.s,m.f,e)};bd.appendChild(d);
+    d.style.left=cx+'px';d.style.top=cy+'px';d.textContent=displayMarkText(m);d.onclick=e=>{e.stopPropagation();press(m.s,m.f,e)};bd.appendChild(d);
     if(pcAt(m.s,m.f)===S.root&&!m.noEmphasis)addKeyRootRing(cx,cy,bd,pcAt(m.s,m.f));
   }
   if(S.triadOn&&S.triad){
@@ -3248,6 +3471,91 @@ function renderLeadingTriadDots(X,F){
   }
 }
 function chordTriadPcs(i){const p=parent(),r=p[i];return i===0||i===3||i===4?[r,(r+4)%12,(r+7)%12]:i===6?[r,(r+3)%12,(r+6)%12]:[r,(r+3)%12,(r+7)%12]}
+
+const TRIAD_TEST_PROGRESSIONS={
+ '1451':[{d:1},{d:4},{d:5},{d:1}],
+ '1645':[{d:1},{d:6},{d:4},{d:5}],
+ '1564':[{d:1},{d:5},{d:6},{d:4}],
+ '1465':[{d:1},{d:4},{d:6},{d:5}],
+ '6415':[{d:6},{d:4},{d:1},{d:5}],
+ '251':[{d:2},{d:5},{d:1}],
+ '6251':[{d:6},{d:2},{d:5},{d:1}],
+ '36251':[{d:3},{d:6},{d:2},{d:5},{d:1}],
+ '1V2_2_5':[{d:1},{secondary:2},{d:2},{d:5}],
+ '1V4_4_5':[{d:1},{secondary:4},{d:4},{d:5}],
+ '1V5_5_1':[{d:1},{secondary:5},{d:5},{d:1}],
+ '1V6_6_2_5':[{d:1},{secondary:6},{d:6},{d:2},{d:5}],
+ '1V6_6_V5_5':[{d:1},{secondary:6},{d:6},{secondary:5},{d:5}],
+ '14m1':[{d:1},{d:4},{d:4,q:'min',label:'4m'},{d:1}],
+ '1b741':[{d:1},{d:7,acc:-1,q:'maj',label:'♭7'},{d:4},{d:1}],
+ '1b641':[{d:1},{d:6,acc:-1,q:'maj',label:'♭6'},{d:4},{d:1}],
+ '1b3_4_1':[{d:1},{d:3,acc:-1,q:'maj',label:'♭3'},{d:4},{d:1}]
+};
+
+function diatonicTriadSpec(index){
+ return {d:index+1};
+}
+const TRIAD_TEST_MIXED_PHRASES=[
+ [{d:1},{d:6},{d:2},{d:5}],
+ [{d:2},{d:5},{d:1}],
+ [{d:3},{d:6},{d:2},{d:5},{d:1}],
+ [{d:1},{secondary:2},{d:2},{d:5},{d:1}],
+ [{d:1},{secondary:4},{d:4},{d:5},{d:1}],
+ [{d:1},{secondary:6},{d:6},{d:2},{d:5}],
+ [{d:1},{d:4},{d:4,q:'min',label:'4m'},{d:1}],
+ [{d:1},{d:7,acc:-1,q:'maj',label:'♭7'},{d:4},{d:1}],
+ [{d:1},{d:6,acc:-1,q:'maj',label:'♭6'},{d:4},{d:1}]
+];
+function triadSpecPcs(spec){
+ if(!spec)return chordTriadPcs(S.triadExperimentChord);
+ const p=parent();
+ let root,q;
+ if(spec.secondary){
+  const target=p[spec.secondary-1];
+  root=(target+7)%12;
+  q='maj';
+ }else{
+  root=(p[spec.d-1]+(spec.acc||0)+12)%12;
+  q=spec.q||(spec.d===1||spec.d===4||spec.d===5?'maj':spec.d===7?'dim':'min');
+ }
+ return q==='maj'?[root,(root+4)%12,(root+7)%12]:
+        q==='dim'?[root,(root+3)%12,(root+6)%12]:
+                  [root,(root+3)%12,(root+7)%12];
+}
+function triadSpecLabel(spec){
+ if(!spec)return String(S.triadExperimentChord+1);
+ if(spec.label)return spec.label;
+ if(spec.secondary)return 'V/'+spec.secondary;
+ const pre=spec.acc===-1?'♭':spec.acc===1?'♯':'';
+ const q=spec.q==='min'?'m':spec.q==='dim'?'°':'';
+ return pre+spec.d+q;
+}
+function currentTriadPcs(){
+ return S.triadTest&&S.triadTestChordSpec?triadSpecPcs(S.triadTestChordSpec):chordTriadPcs(S.triadExperimentChord);
+}
+function nextTriadTestSpec(){
+ if(S.triadTestSource==='random'){
+  const n=randomTriadTestChord();
+  S.triadTestLastChord=n;
+  return diatonicTriadSpec(n);
+ }
+ if(S.triadTestSource==='mixed'){
+  if(!S.triadTestMixedPhrase||S.triadTestMixedIndex>=S.triadTestMixedPhrase.length){
+   const pool=TRIAD_TEST_MIXED_PHRASES;
+   let phrase=pool[Math.floor(Math.random()*pool.length)];
+   if(pool.length>1&&phrase===S.triadTestMixedPhrase){
+    phrase=pool[(pool.indexOf(phrase)+1+Math.floor(Math.random()*(pool.length-1)))%pool.length];
+   }
+   S.triadTestMixedPhrase=phrase;
+   S.triadTestMixedIndex=0;
+  }
+  return {...S.triadTestMixedPhrase[S.triadTestMixedIndex++]};
+ }
+ const seq=TRIAD_TEST_PROGRESSIONS[S.triadTestSource]||TRIAD_TEST_PROGRESSIONS['1451'];
+ const spec={...seq[S.triadTestProgressIndex%seq.length]};
+ S.triadTestProgressIndex=(S.triadTestProgressIndex+1)%seq.length;
+ return spec;
+}
 function renderChordRings(X,F){return}
 function activeTriadPcs(){if(S.triadOn&&S.triad)return [...new Set(S.triad.notes.map(n=>n.pc))];return []}
 function activeTriadRootPc(){if(S.triadOn&&S.triad)return S.triad.root;return null}
@@ -3391,6 +3699,8 @@ function triadExperimentChordName(){
  return rootName;
 }
 function showTriadChordPopup(){
+ const testPrompt=$('triadChordPopup');
+ if(testPrompt)testPrompt.classList.remove('triadTestPrompt');
  const p=$('triadChordPopup');
  if(!p||!S.triadExperimentOn)return;
  p.textContent=triadExperimentChordName();
@@ -3416,16 +3726,30 @@ function updateTriadStringChoices(){
  document.querySelectorAll('.triadStringChoice').forEach(b=>{
   b.classList.toggle('selected',Number(b.dataset.triadSet)===S.triadStringSet);
  });
+ document.querySelectorAll('.triadMeterChoice').forEach(b=>{
+  b.classList.toggle('selected',Number(b.dataset.beats)===S.triadTestBeats);
+ });
+ document.querySelectorAll('.triadTempoChoice').forEach(b=>{
+  b.classList.toggle('selected',Number(b.dataset.tempo)===S.triadTestTempo);
+ });
+ const ps=$('triadProgressionSelect'); if(ps)ps.value=S.triadTestSource;
+ const mc=$('triadManualCheck'); if(mc)mc.checked=!!S.triadTestManual;
 }
 
 function triadControlIsExempt(el){
  if(!el)return false;
  // The Triad button must remain active so taps can continue cycling triads.
  if(el.id==='triadExperimentBtn')return true;
+ // Scale may be overlaid while the experimental triad remains active.
+ if(el.id==='fingerPositionsBtn')return true;
  // The five dedicated pentatonic box buttons may be changed while triads remain on.
  if(/^box[1-5]Btn$/.test(el.id))return true;
  // Choosing the string set is part of the triad control itself.
  if(el.classList&&el.classList.contains('triadStringChoice'))return true;
+ if(el.id==='triadTestBtn')return true;
+ if(el.classList&&el.classList.contains('triadMeterChoice'))return true;
+ if(el.classList&&el.classList.contains('triadTempoChoice'))return true;
+ if(el.id==='triadProgressionSelect'||el.id==='triadManualCheck')return true;
  return false;
 }
 
@@ -3486,6 +3810,7 @@ function chooseTriadStringSet(n){
 
 function turnOffTriadExperiment(){
  if(!S.triadExperimentOn)return;
+ if(S.triadTest)stopTriadTest(false);
  S.triadExperimentOn=false;
  S.triadExperimentChord=0;
  hideTriadChordPopup();
@@ -3510,7 +3835,7 @@ function triadInternalStrings(){
 }
 function selectedDiatonicTriadVoicings(){
  const strings=triadInternalStrings();
- const pcs=chordTriadPcs(S.triadExperimentChord);
+ const pcs=currentTriadPcs();
  const wanted=new Set(pcs);
  const opts=strings.map(s=>{
   const a=[];
@@ -3845,7 +4170,7 @@ function applyTriadExperimentMarks(){
    if(!m){
     // Preserve the established semantic color language:
     // pentatonic = strong green; diatonic non-pentatonic = light green.
-    const cls=pent.has(p.pc)?'pospent':(diatonic.has(p.pc)?'posfill':'out');
+    const cls=pent.has(p.pc)?'pospent':(diatonic.has(p.pc)?'posfill':'noteout');
     m=mark(p.s,p.f,cls,true);
     S.marks.set(k,m);
    }
@@ -3857,6 +4182,31 @@ function applyTriadExperimentMarks(){
 
 function rebuildExperimentDisplay(){
  S.marks.clear();
+
+ // While experimental triads are active, the Scale button can add a
+ // full-fretboard overlay without replacing the triad.
+ if(S.stage>0){
+  const pent=pentPcs();
+  for(let s=0;s<6;s++){
+   for(let f=0;f<=TOTAL_FRETS;f++){
+    if(pent.includes(pcAt(s,f))){
+     S.marks.set(keyOf(s,f),mark(s,f,'pospent',true));
+    }
+   }
+  }
+  if(S.stage>1){
+   const fill=parent().filter(pc=>!pent.includes(pc));
+   for(let s=0;s<6;s++){
+    for(let f=0;f<=TOTAL_FRETS;f++){
+     const k=keyOf(s,f);
+     if(fill.includes(pcAt(s,f))&&!S.marks.has(k)){
+      S.marks.set(k,mark(s,f,'posfill',true));
+     }
+    }
+   }
+  }
+ }
+
  if(fixedBoxesActive()){
   const boxes=[];
   for(let n=1;n<=5;n++)if(S['fixedBox'+n])boxes.push(n);
@@ -3883,7 +4233,436 @@ function rebuildExperimentDisplay(){
  applyTriadExperimentMarks();
 }
 
+
+function clearTriadTestTimer(){
+ if(S.triadTestTimer){
+  clearTimeout(S.triadTestTimer);
+  S.triadTestTimer=null;
+ }
+}
+function clearTriadTestFlashTimer(){
+ if(S.triadTestFlashTimer){
+  clearTimeout(S.triadTestFlashTimer);
+  S.triadTestFlashTimer=null;
+ }
+ const p=$('triadChordPopup');
+ if(p)p.classList.remove('triadTestFlashOff');
+}
+let triadTestAudioCtx=null;
+function triadTestMetronomeClick(){
+ try{
+  const AC=window.AudioContext||window.webkitAudioContext;
+  if(!AC)return;
+  if(!triadTestAudioCtx)triadTestAudioCtx=new AC();
+  if(triadTestAudioCtx.state==='suspended')triadTestAudioCtx.resume();
+
+  const now=triadTestAudioCtx.currentTime;
+  const osc=triadTestAudioCtx.createOscillator();
+  const gain=triadTestAudioCtx.createGain();
+  osc.type='square';
+  osc.frequency.setValueAtTime(1250,now);
+  gain.gain.setValueAtTime(.0001,now);
+  gain.gain.exponentialRampToValueAtTime(.16,now+.004);
+  gain.gain.exponentialRampToValueAtTime(.0001,now+.055);
+  osc.connect(gain);
+  gain.connect(triadTestAudioCtx.destination);
+  osc.start(now);
+  osc.stop(now+.06);
+ }catch(e){}
+}
+function triadTestPlayChord(chordIndex,volume=1){
+ try{
+  const AC=window.AudioContext||window.webkitAudioContext;
+  if(!AC)return;
+  if(!triadTestAudioCtx)triadTestAudioCtx=new AC();
+  if(triadTestAudioCtx.state==='suspended')triadTestAudioCtx.resume();
+
+  const pcs=(S.triadTest&&S.triadTestChordSpec)?triadSpecPcs(S.triadTestChordSpec):chordTriadPcs(chordIndex);
+  if(!pcs||pcs.length<3)return;
+
+  // Voice the root around middle C and place chord tones upward in close
+  // position. The pitch classes already encode major/minor/diminished quality.
+  const rootPc=pcs[0];
+  let rootMidi=48+rootPc;
+  if(rootMidi<52)rootMidi+=12;
+  if(rootMidi>63)rootMidi-=12;
+
+  const midis=[rootMidi];
+  for(let i=1;i<3;i++){
+   let m=rootMidi+((pcs[i]-rootPc+12)%12);
+   while(m<=midis[midis.length-1])m+=12;
+   midis.push(m);
+  }
+
+  const now=triadTestAudioCtx.currentTime;
+  const master=triadTestAudioCtx.createGain();
+  master.gain.setValueAtTime(.0001,now);
+  master.gain.exponentialRampToValueAtTime(.20*Math.max(.12,Math.min(1,volume)),now+.018);
+  master.gain.exponentialRampToValueAtTime(.0001,now+1.05);
+  master.connect(triadTestAudioCtx.destination);
+
+  midis.forEach((m,i)=>{
+   const osc=triadTestAudioCtx.createOscillator();
+   const gain=triadTestAudioCtx.createGain();
+   osc.type='triangle';
+   osc.frequency.setValueAtTime(440*Math.pow(2,(m-69)/12),now);
+   gain.gain.setValueAtTime(.72/(i+1),now);
+   osc.connect(gain);
+   gain.connect(master);
+   osc.start(now);
+   osc.stop(now+1.08);
+  });
+ }catch(e){}
+}
+function pulseTriadTestPromptOnBeat(){
+ const p=$('triadChordPopup');
+ if(S.triadTestManual)return;
+ if(!S.triadTest||!p||!p.classList.contains('show'))return;
+ clearTriadTestFlashTimer();
+ p.classList.remove('triadTestFlashOff');
+ S.triadTestFlashTimer=setTimeout(()=>{
+  if(S.triadTest&&p.classList.contains('show'))p.classList.add('triadTestFlashOff');
+ },250);
+}
+function stopTriadTestMetronome(){
+ if(S.triadTestMetroTimer){
+  clearTimeout(S.triadTestMetroTimer);
+  S.triadTestMetroTimer=null;
+ }
+}
+function hideNutBeatIndicator(){
+ const ind=$('nutBeatIndicator');
+ if(ind)ind.style.display='none';
+}
+function updateNutBeatIndicator(beat){
+ const ind=$('nutBeatIndicator');
+ const shell=$('shell');
+ const nut=document.querySelector('#shell .nut');
+ if(!ind||!shell||!nut)return;
+
+ const sr=shell.getBoundingClientRect();
+ const nr=nut.getBoundingClientRect();
+ const beats=Math.max(2,Math.min(4,S.triadTestBeats));
+ const b=Math.max(1,Math.min(beats,beat));
+
+ // Split the visible nut horizontally into equal beat segments,
+ // advancing left to right across the nut.
+ const seg=nr.width/beats;
+ ind.style.display='block';
+ ind.style.left=(nr.left-sr.left+(b-1)*seg)+'px';
+ ind.style.top=(nr.top-sr.top)+'px';
+ ind.style.width=Math.max(3,seg)+'px';
+ ind.style.height=Math.max(3,nr.height)+'px';
+}
+function captureTriadTestScaleLayer(){
+ const snap=new Map();
+
+ // Capture the ACTUAL visible pentatonic/scale layer, regardless of which
+ // control produced it. This includes:
+ //   - full-neck Scale (S.stage)
+ //   - dedicated Box 1-5 selections
+ //   - their optional diatonic fill
+ // Do not key this to S.stage: Box displays intentionally use stage==0.
+ for(const [k,m] of S.marks){
+  if(m.c!=='pospent'&&m.c!=='posfill')continue;
+  snap.set(k,{...m,triadSlowFlash:false});
+ }
+
+ // For the full-neck Scale control, complete the snapshot from state in case
+ // another overlay happened to obscure one of its positions.
+ if(S.stage>0){
+  const pp=new Set(pentPcs());
+  const par=new Set(parent());
+  for(let s=0;s<6;s++){
+   for(let f=0;f<=TOTAL_FRETS;f++){
+    const pc=pcAt(s,f);
+    const k=keyOf(s,f);
+    if(pp.has(pc)){
+     if(!snap.has(k))snap.set(k,mark(s,f,'pospent',true));
+    }else if(S.stage>1&&par.has(pc)){
+     if(!snap.has(k))snap.set(k,mark(s,f,'posfill',true));
+    }
+   }
+  }
+ }
+
+ S.triadTestScaleMarks=snap;
+}
+function rebuildTriadTestScaleLayer(){
+ S.marks.clear();
+ const snap=S.triadTestScaleMarks;
+ if(!snap)return;
+
+ // Restore fresh copies so triad animation flags can never mutate the saved
+ // Scale snapshot.
+ for(const [k,m] of snap){
+  S.marks.set(k,{...m,triadSlowFlash:false});
+ }
+}
+function applyTriadTestAnswerMarks(){
+ // Scale owns each dot's visual appearance; triad membership owns animation.
+ // Calculate the current triad voicing separately, then merge it into the
+ // persistent Scale layer.
+ const savedMarks=S.marks;
+
+ S.marks=new Map();
+ applyTriadExperimentMarks();
+ const triadOnly=S.marks;
+
+ S.marks=savedMarks;
+
+ for(const [k,tm] of triadOnly){
+  const existing=S.marks.get(k);
+
+  if(existing){
+   // This triad tone is already displayed by the pentatonic/full-scale layer.
+   // Preserve its scale color/text, but animate that same dot as a triad tone.
+   existing.triadSlowFlash=true;
+  }else{
+   // Triad tone outside the displayed scale keeps the normal triad treatment.
+   tm.triadSlowFlash=true;
+   S.marks.set(k,tm);
+  }
+ }
+}
+function triadTestMasterBeat(){
+ if(!S.triadTest)return;
+
+ const beats=Math.max(2,Math.min(4,S.triadTestBeats));
+ if(!S.triadTestIntro)S.triadTestBeat=(S.triadTestBeat%beats)+1;
+
+ triadTestMetronomeClick();
+
+ if(S.triadTestIntro){
+  S.triadTestIntroBeat++;
+  updateNutBeatIndicator(((S.triadTestIntroBeat-1)%4)+1);
+  pulseTriadTestPromptOnBeat();
+
+  if(S.triadTestIntroBeat>=4){
+   S.triadTestIntro=false;
+   S.triadTestIntroBeat=0;
+   S.triadTestBeat=0;
+   S.triadTestNextChord=0;
+   S.triadTestChordSpec=diatonicTriadSpec(0);
+   if(S.triadTestManual)S.triadTestManualAdvance=true;
+  }
+  return;
+ }
+
+ updateNutBeatIndicator(S.triadTestBeat);
+
+ if(S.triadTestBeat===1){
+  const mayReveal=!S.triadTestManual||S.triadTestManualAdvance;
+  if(mayReveal && S.triadTestNextChord!==null){
+   hideTriadTestPrompt();
+
+   if(typeof S.triadTestNextChord==='number'){
+    S.triadExperimentChord=S.triadTestNextChord;
+    S.triadTestChordSpec=diatonicTriadSpec(S.triadExperimentChord);
+   }else{
+    S.triadTestChordSpec={...S.triadTestNextChord};
+   }
+   S.triadTestNextChord=null;
+   S.triadTestManualAdvance=false;
+   S.triadTestManualPreview=false;
+   const manualPrompt=$('triadChordPopup');
+   if(manualPrompt)manualPrompt.classList.remove('manualWaiting');
+
+   rebuildTriadTestScaleLayer();
+   for(const m of S.marks.values())m.triadSlowFlash=false;
+   applyTriadTestAnswerMarks();
+   syncSegmentMarks();
+   render();
+
+   if(S.triadTestManual){
+    // Manual resting state: large display names the chord that is actually
+    // being played/shown. The next chord is not exposed until first click.
+    setTriadPromptNumber(S.triadTestChordSpec);
+   }
+  }
+
+  // In Manual mode, chord audio is allowed only while the large display
+  // names the CURRENT chord. After first click it previews the NEXT chord,
+  // so only the metronome is heard until that chord is committed.
+  if(!S.triadTestManual || !S.triadTestManualPreview){
+   triadTestPlayChord(S.triadExperimentChord,1);
+  }
+
+ }else if(S.triadTestBeat===2){
+  if(!S.triadTestManual){
+   triadTestPlayChord(S.triadExperimentChord,.38);
+
+   const beatMs=60000/Math.max(40,Math.min(240,S.triadTestTempo));
+   clearTriadTestTimer();
+   S.triadTestTimer=setTimeout(()=>{
+    if(!S.triadTest||S.triadTestBeat!==2)return;
+
+    rebuildTriadTestScaleLayer();
+    for(const m of S.marks.values())m.triadSlowFlash=false;
+    syncSegmentMarks();
+    render();
+
+    const next=nextTriadTestSpec();
+    S.triadTestNextChord=next;
+    setTriadPromptNumber(next);
+   },Math.min(90,beatMs*.12));
+  }
+
+ }else if(!S.triadTestManual){
+  triadTestPlayChord(S.triadExperimentChord,.38);
+  pulseTriadTestPromptOnBeat();
+ }
+
+ if(!S.triadTestManual){
+  const p=$('triadChordPopup');
+  if(p&&p.classList.contains('show'))pulseTriadTestPromptOnBeat();
+ }
+}
+function scheduleTriadTestMasterBeat(){
+ stopTriadTestMetronome();
+ const beatMs=60000/Math.max(40,Math.min(240,S.triadTestTempo));
+ let expected=performance.now()+beatMs;
+
+ const tick=()=>{
+  if(!S.triadTest)return;
+  triadTestMasterBeat();
+  expected+=beatMs;
+  const wait=Math.max(0,expected-performance.now());
+  S.triadTestMetroTimer=setTimeout(tick,wait);
+ };
+ S.triadTestMetroTimer=setTimeout(tick,beatMs);
+}
+function setTriadPromptNumber(value){
+ const p=$('triadChordPopup');
+ if(!p)return;
+ if(triadChordPopupTimer){
+  clearTimeout(triadChordPopupTimer);
+  triadChordPopupTimer=null;
+ }
+ const spec=(typeof value==='number')?diatonicTriadSpec(value):value;
+ p.textContent=triadSpecLabel(spec);
+ p.classList.add('triadTestPrompt');
+ p.classList.remove('triadTestFlashOff');
+ p.classList.add('show');
+}
+function randomTriadTestChord(){
+ let n=Math.floor(Math.random()*7);
+ if(S.triadTestLastChord!==null && n===S.triadTestLastChord){
+  n=(n+1+Math.floor(Math.random()*6))%7;
+ }
+ return n;
+}
+function hideTriadTestPrompt(){
+ clearTriadTestFlashTimer();
+ const p=$('triadChordPopup');
+ if(!p)return;
+ p.classList.remove('show','triadTestPrompt','triadTestFlashOff');
+}
+
+function scheduleNextTriadTestPrompt(){
+ // Timing is owned by the single master beat clock in 4.19.8.
+}
+function startTriadTest(){
+ clearTriadTestTimer();
+ clearTriadTestFlashTimer();
+ stopTriadTestMetronome();
+ S.triadTestScaleStage=S.stage;
+ captureTriadTestScaleLayer();
+ S.triadTest=true;
+ S.triadExperimentOn=true;
+ const ps=$('triadProgressionSelect');
+ const mc=$('triadManualCheck');
+ S.triadTestSource=ps?ps.value:'random';
+ S.triadTestManual=!!(mc&&mc.checked);
+ S.triadTestManualAdvance=false;
+ S.triadTestManualPreview=false;
+ const manualPromptStart=$('triadChordPopup');
+ if(manualPromptStart)manualPromptStart.classList.remove('manualWaiting');
+ S.triadTestProgressIndex=0;
+ S.triadTestMixedPhrase=null;
+ S.triadTestMixedIndex=0;
+ S.triadTestChordSpec=diatonicTriadSpec(0);
+ S.triadTestLastChord=0;
+ S.triadTestNextChord=null;
+ S.triadTestIntro=true;
+ S.triadTestIntroBeat=1;
+ S.triadTestBeat=0;
+
+ // Preserve the pentatonic display exactly as selected when Test began.
+ // Do not zero S.stage, pentBox, or dedicated Box 1-5 state here: the saved
+ // visible layer is restored throughout the test.
+ S.cagedOn=false;
+ S.cagedHarmonyMode=false;
+ S.cagedHarmonyAnchor=null;
+ S.segments.clear();
+ S.autoSegMarks.clear();
+
+ closeTriadStringPopup();
+ updateFingerPositionsButton();
+ updatePentBoxButton();
+ updateCagedButton();
+ updateFixedBoxButtons();
+ updateTriadExperimentButton();
+
+ // Four-beat orientation count-in: large 1 first, with no triad yet.
+ // Beat 1 happens immediately so the user gets an instant visual/audio cue.
+ rebuildTriadTestScaleLayer();
+ syncSegmentMarks();
+ render();
+ setTriadPromptNumber(0);
+ pulseTriadTestPromptOnBeat();
+ triadTestMetronomeClick();
+ updateNutBeatIndicator(1);
+
+ // Beats 2-4 are driven by the same drift-corrected master clock.
+ // After beat 4, the I triad appears on the following downbeat and the
+ // established testing sequence continues unchanged.
+ scheduleTriadTestMasterBeat();
+}
+function stopTriadTest(turnTriadOff=false){
+ if(!S.triadTest)return;
+ S.triadTest=false;
+ clearTriadTestTimer();
+ clearTriadTestFlashTimer();
+ stopTriadTestMetronome();
+ S.triadTestBeat=0;
+ S.triadTestIntro=false;
+ S.triadTestIntroBeat=0;
+ hideNutBeatIndicator();
+ S.triadTestNextChord=null;
+ S.triadTestLastChord=null;
+ S.triadTestManualAdvance=false;
+ S.triadTestManualPreview=false;
+ const manualPromptStop=$('triadChordPopup');
+ if(manualPromptStop)manualPromptStop.classList.remove('manualWaiting');
+ S.triadTestChordSpec=null;
+ S.triadTestProgressIndex=0;
+ S.triadTestMixedPhrase=null;
+ S.triadTestMixedIndex=0;
+ const prompt=$('triadChordPopup');
+ if(prompt)prompt.classList.remove('triadTestPrompt');
+ hideTriadChordPopup();
+ if(turnTriadOff){
+  // Restore the persistent pentatonic layer before discarding its snapshot.
+  const savedScale=S.triadTestScaleMarks;
+  S.triadExperimentOn=false;
+  S.triadExperimentChord=0;
+  S.marks.clear();
+  if(savedScale){
+   for(const [k,m] of savedScale)S.marks.set(k,{...m,triadSlowFlash:false});
+  }
+  syncSegmentMarks();
+  updateTriadExperimentButton();
+  render();
+ }
+ S.triadTestScaleMarks=null;
+}
+
 function toggleTriadExperiment(){
+ if(S.triadTest){
+  stopTriadTest(true);
+  return;
+ }
  if(!S.triadExperimentOn){
   S.triadExperimentOn=true;
   S.triadExperimentChord=0;
@@ -3891,7 +4670,8 @@ function toggleTriadExperiment(){
   S.triadExperimentChord=(S.triadExperimentChord+1)%7;
  }
 
- S.stage=0;
+ // Preserve S.stage so an existing full-neck Scale overlay can coexist
+ // while triads are activated or cycled.
  S.pentBox=0;
  S.pentBoxFill=false;
  S.cagedOn=false;
@@ -4161,8 +4941,21 @@ function cagedLong(){
 }
 function rebuildPositions(){S.marks.clear();if(!S.stage)return;const pent=pentPcs();for(let s=0;s<6;s++)for(let f=0;f<=TOTAL_FRETS;f++)if(pent.includes(pcAt(s,f)))S.marks.set(keyOf(s,f),mark(s,f,'pospent',true));if(S.stage>1){const fill=parent().filter(p=>!pent.includes(p));for(let s=0;s<6;s++)for(let f=0;f<=TOTAL_FRETS;f++)if(fill.includes(pcAt(s,f))&&!S.marks.has(keyOf(s,f)))S.marks.set(keyOf(s,f),mark(s,f,'posfill',true))}}
 function toggleFingerPositions(){
- S.triadExperimentOn=false;S.triadExperimentChord=0;hideTriadChordPopup();updateTriadExperimentButton();
- S.fixedBox1=false;S.fixedBox2=false;S.fixedBox3=false;S.fixedBox4=false;S.fixedBox5=false;S.fixedBoxFill1=false;S.fixedBoxFill2=false;S.fixedBoxFill3=false;S.fixedBoxFill4=false;S.fixedBoxFill5=false;updateFixedBoxButtons();
+  // In experimental-triad mode, Scale becomes an overlay control:
+  // tap toggles the full-fretboard pentatonic while leaving the triad active.
+  if(S.triadExperimentOn){
+    S.chordDialogOpen=false;
+    S.stage=S.stage===0?1:0;
+    rebuildExperimentDisplay();
+    syncSegmentMarks();
+    updateFingerPositionsButton();
+    updateTriadExperimentButton();
+    render();
+    return;
+  }
+
+  S.triadExperimentOn=false;S.triadExperimentChord=0;hideTriadChordPopup();updateTriadExperimentButton();
+  S.fixedBox1=false;S.fixedBox2=false;S.fixedBox3=false;S.fixedBox4=false;S.fixedBox5=false;S.fixedBoxFill1=false;S.fixedBoxFill2=false;S.fixedBoxFill3=false;S.fixedBoxFill4=false;S.fixedBoxFill5=false;updateFixedBoxButtons();
   S.chordDialogOpen=false;
   S.pentBox=0;
   S.pentBoxFill=false;
@@ -4174,10 +4967,22 @@ function toggleFingerPositions(){
   updateFingerPositionsButton();
   render();
 }
-
 function toggleFingerPositionFill(){
- S.triadExperimentOn=false;S.triadExperimentChord=0;hideTriadChordPopup();updateTriadExperimentButton();
- S.fixedBox1=false;S.fixedBox2=false;S.fixedBox3=false;S.fixedBox4=false;S.fixedBox5=false;S.fixedBoxFill1=false;S.fixedBoxFill2=false;S.fixedBoxFill3=false;S.fixedBoxFill4=false;S.fixedBoxFill5=false;updateFixedBoxButtons();
+  // In experimental-triad mode, long press toggles the full diatonic scale
+  // across the fretboard. The selected triad remains on top and keeps jigging.
+  if(S.triadExperimentOn){
+    S.chordDialogOpen=false;
+    S.stage=S.stage===2?1:2;
+    rebuildExperimentDisplay();
+    syncSegmentMarks();
+    updateFingerPositionsButton();
+    updateTriadExperimentButton();
+    render();
+    return;
+  }
+
+  S.triadExperimentOn=false;S.triadExperimentChord=0;hideTriadChordPopup();updateTriadExperimentButton();
+  S.fixedBox1=false;S.fixedBox2=false;S.fixedBox3=false;S.fixedBox4=false;S.fixedBox5=false;S.fixedBoxFill1=false;S.fixedBoxFill2=false;S.fixedBoxFill3=false;S.fixedBoxFill4=false;S.fixedBoxFill5=false;updateFixedBoxButtons();
   S.chordDialogOpen=false;
   S.pentBox=0;
   S.pentBoxFill=false;
@@ -4442,14 +5247,11 @@ function toggleManualLineAt(s,f){
   render();
 }
 
-function fretboardLabelModeIsIdle(){
+function fretboardLabelModeCanCycle(){
  return !S.intervalMode
-   && !S.triadExperimentOn
-   && !S.cagedOn
-   && !fixedBoxesActive()
-   && !S.pentBox
-   && S.stage===0
-   && !S.insertMode;
+   && !S.insertMode
+   && !S.chordDialogOpen
+   && !S.tuningTapAvailable;
 }
 function cycleFretboardLabelMode(){
  const seq=['interval','note','blank'];
@@ -4458,7 +5260,7 @@ function cycleFretboardLabelMode(){
  render();
 }
 function press(s,f,evt=null){
-  if(fretboardLabelModeIsIdle()){
+  if(fretboardLabelModeCanCycle() && S.marks.has(keyOf(s,f))){
     cycleFretboardLabelMode();
     return;
   }
@@ -4487,20 +5289,28 @@ function press(s,f,evt=null){
       if(!parent().includes(pc))return 'noteout';
       return pentPcs().includes(pc)?'pospent':'posfill';
     };
+
+    const targetPc=pcAt(s,f);
+    const clickedWasPresent=S.marks.has(key);
+
     if(S.allNotes){
-      const targetPc=pcAt(s,f);
-      const noteColor=noteColorForPc(targetPc);
+      // All-Note mode toggles the entire pitch class as one selection.
+      // If the tapped note is already present, remove every occurrence of
+      // that same note; otherwise add every occurrence across the fretboard.
       for(let ss=0;ss<6;ss++){
         for(let ff=0;ff<=TOTAL_FRETS;ff++){
-          if(pcAt(ss,ff)===targetPc){
-            S.marks.set(keyOf(ss,ff),mark(ss,ff,noteColor,true));
-          }
+          if(pcAt(ss,ff)!==targetPc)continue;
+          const k=keyOf(ss,ff);
+          if(clickedWasPresent)S.marks.delete(k);
+          else S.marks.set(k,mark(ss,ff,noteColorForPc(targetPc),true));
         }
       }
     }else{
-      const targetPc=pcAt(s,f);
-      S.marks.set(key,mark(s,f,noteColorForPc(targetPc),true));
+      // Ordinary Note mode toggles only the single tapped position.
+      if(clickedWasPresent)S.marks.delete(key);
+      else S.marks.set(key,mark(s,f,noteColorForPc(targetPc),true));
     }
+
     render();
     return;
   }
@@ -4825,7 +5635,6 @@ function bindDirectTriadAutoOff(el){
 [
  editBarsBtn,
  editNotesBtn,
- fingerPositionsBtn,
  cagedBtn,
  displayToolsBtn,
  resetBtn,
@@ -5003,6 +5812,101 @@ document.querySelectorAll('.triadStringChoice').forEach(b=>{
   chooseTriadStringSet(Number(b.dataset.triadSet));
  });
 });
+document.querySelectorAll('.triadMeterChoice').forEach(b=>{
+ b.addEventListener('click',e=>{
+  e.preventDefault();
+  e.stopPropagation();
+  S.triadTestBeats=Number(b.dataset.beats)||4;
+  updateTriadStringChoices();
+ });
+});
+document.querySelectorAll('.triadTempoChoice').forEach(b=>{
+ b.addEventListener('click',e=>{
+  e.preventDefault();
+  e.stopPropagation();
+  S.triadTestTempo=Number(b.dataset.tempo)||80;
+  updateTriadStringChoices();
+ });
+});
+const triadProgressionSelect=$('triadProgressionSelect');
+if(triadProgressionSelect){
+ triadProgressionSelect.addEventListener('change',e=>{
+  e.stopPropagation();
+  S.triadTestSource=triadProgressionSelect.value||'random';
+  S.triadTestProgressIndex=0;
+  S.triadTestMixedPhrase=null;
+  S.triadTestMixedIndex=0;
+ });
+}
+const triadManualCheck=$('triadManualCheck');
+if(triadManualCheck){
+ triadManualCheck.addEventListener('change',e=>{
+  e.stopPropagation();
+  S.triadTestManual=!!triadManualCheck.checked;
+ });
+}
+// In Manual Test, touching the large prompt requests advancement. The actual
+// chord reveal remains quantized to the next beat 1.
+const triadPromptControl=$('triadChordPopup');
+if(triadPromptControl){
+ let triadPromptTouchHandled=false;
+
+ const requestManualTriadAdvance=e=>{
+  if(!S.triadTest||!S.triadTestManual||!triadPromptControl.classList.contains('triadTestPrompt'))return false;
+  if(e){
+   e.preventDefault();
+   e.stopPropagation();
+   if(e.stopImmediatePropagation)e.stopImmediatePropagation();
+  }
+  if(!S.triadTestManualPreview){
+   // First click: reveal what the NEXT chord will be, but do not change the
+   // sounding/displayed triad yet.
+   if(S.triadTestNextChord===null)S.triadTestNextChord=nextTriadTestSpec();
+   setTriadPromptNumber(S.triadTestNextChord);
+   S.triadTestManualPreview=true;
+
+   // Silent waiting phase: remove the previous triad completely while
+   // preserving the user's selected Scale/Box layer.
+   rebuildTriadTestScaleLayer();
+   for(const m of S.marks.values())m.triadSlowFlash=false;
+   syncSegmentMarks();
+   render();
+
+   triadPromptControl.classList.add('manualWaiting');
+  }else if(S.triadTestNextChord!==null){
+   // Second click: commit that previewed chord on the next downbeat.
+   S.triadTestManualAdvance=true;
+  }
+  return true;
+ };
+
+ triadPromptControl.addEventListener('touchstart',e=>{
+  triadPromptTouchHandled=requestManualTriadAdvance(e);
+ },{passive:false,capture:true});
+
+ triadPromptControl.addEventListener('pointerdown',e=>{
+  if(e.pointerType==='touch'&&triadPromptTouchHandled)return;
+  requestManualTriadAdvance(e);
+ },true);
+
+ triadPromptControl.addEventListener('click',e=>{
+  if(triadPromptTouchHandled){
+   triadPromptTouchHandled=false;
+   e.preventDefault();
+   e.stopPropagation();
+   return;
+  }
+  requestManualTriadAdvance(e);
+ },true);
+}
+const triadTestBtn=$('triadTestBtn');
+if(triadTestBtn){
+ triadTestBtn.addEventListener('click',e=>{
+  e.preventDefault();
+  e.stopPropagation();
+  startTriadTest();
+ });
+}
 
 
 // Any other button/select control deselects manual edit mode.
@@ -5101,9 +6005,137 @@ if(document.readyState==='loading'){
 window.addEventListener('load',forceInitialFullRender,{once:true});
 
 
+
+// Suppress iOS/Dropbox Preview rubber-band movement of the whole document.
+// Keep touch scrolling available only inside explicitly scrollable popup/list areas.
+(function installViewportBounceGuard(){
+  const scrollableSelector=[
+    '.intervalPopup',
+    '.interval-popup-card',
+    '.triadStringPopup',
+    '.tuning-popup',
+    '#tuningPresetList',
+    '.tuning-preset-list',
+    '.toolpopup',
+    '.popup',
+    '[data-scrollable="true"]'
+  ].join(',');
+
+  function canScrollElement(el){
+    if(!el)return false;
+    const scroller=el.closest&&el.closest(scrollableSelector);
+    if(!scroller)return false;
+    return scroller.scrollHeight>scroller.clientHeight+1;
+  }
+
+  document.addEventListener('touchmove',e=>{
+    if(canScrollElement(e.target))return;
+    e.preventDefault();
+  },{passive:false,capture:true});
+
+  // Defensive reset in case the preview host tries to shift document scroll.
+  window.addEventListener('scroll',()=>{
+    if(window.scrollX!==0||window.scrollY!==0)window.scrollTo(0,0);
+  },{passive:true});
+})();
 </script>
 
-</body>
+<div id="infoHelpCard" role="status" aria-live="polite"></div><script>
+(function(){
+ let on=false;
+ const ib=document.getElementById('infoBtn'), card=document.getElementById('infoHelpCard');
+ if(!ib||!card)return;
+
+ const help=[
+ ['#fingerPositionsBtn','Scale','Tap: show or hide the pentatonic scale. Long press: add or remove the other diatonic scale notes.'],
+ ['#editBarsBtn','Bar','Tap: use Bar mode. Long press: All Bars.'],
+ ['#editNotesBtn','Note','Tap: enter Note mode, then tap fret positions to add or remove notes. Long press: All Note mode.'],
+ ['#cagedBtn','CAGED','Tap: cycle CAGED triad forms. Long press: enter or leave CAGED harmony mode.'],
+ ['#box1Btn','Box 1','Tap: show or hide Box 1. Long press: add or remove nearby non-pentatonic diatonic notes.'],
+ ['#box2Btn','Box 2','Tap: show or hide Box 2. Long press: add or remove nearby non-pentatonic diatonic notes.'],
+ ['#box3Btn','Box 3','Tap: show or hide Box 3. Long press: add or remove nearby non-pentatonic diatonic notes.'],
+ ['#box4Btn','Box 4','Tap: show or hide Box 4. Long press: add or remove nearby non-pentatonic diatonic notes.'],
+ ['#box5Btn','Box 5','Tap: show or hide Box 5. Long press: add or remove nearby non-pentatonic diatonic notes.'],
+ ['#triadBtn','Triad','Tap: show or cycle triads. Long press: choose the string set and Triad Test settings.'],
+ ['#intervalBtn','Interval','Tap: open Interval mode and its interval/test choices.'],
+ ['#keySel','Key','Tap: choose the key.'],
+ ['#modeSel','Mode','Tap: choose the mode.'],
+ ['#displayToolsBtn','Tools','Tap: open the display tools.'],
+ ['#resetBtn','Reset','Tap: reset the fretboard and controls.'],
+ ['#triadChordPopup','Large chord display','In Manual Triad Test: first tap previews the next chord; second tap advances to it on the next downbeat.'],
+ ['#shell','Fretboard','Use according to the active control. At startup/reset, tap the empty fretboard to open tuning controls.']
+ ];
+
+ function show(target){
+  for(const [sel,name,desc] of help){
+   if(target.closest&&target.closest(sel)){
+    card.innerHTML='<b>'+name+'</b><br>'+desc;
+    card.classList.add('show');
+    return;
+   }
+  }
+  const el=target.closest&&target.closest('button,select,input,label,[role="button"],.open,.mark');
+  if(el){
+   const name=el.getAttribute('aria-label')||el.title||el.textContent.trim()||'Control';
+   card.innerHTML='<b>'+name+'</b><br>Tap this control during normal operation to use it.';
+   card.classList.add('show');
+  }
+ }
+
+ function setInfo(v){
+  on=v;
+  ib.classList.toggle('infoOn',v);
+  ib.setAttribute('aria-pressed',v?'true':'false');
+  if(v){
+   card.innerHTML='<b>Information mode</b><br>Tap any control or active area to learn what it does. Tap Info again to return to normal operation.';
+   card.classList.add('show');
+  }else{
+   card.classList.remove('show');
+  }
+ }
+
+ // While Info is on, stop existing press/long-press handlers before they start,
+ // but DO NOT preventDefault: the completed tap still becomes a click.
+ function blockStart(e){
+  if(!on)return;
+  e.stopPropagation();
+  if(e.stopImmediatePropagation)e.stopImmediatePropagation();
+ }
+ document.addEventListener('pointerdown',blockStart,true);
+ document.addEventListener('touchstart',blockStart,{capture:true,passive:true});
+ document.addEventListener('mousedown',blockStart,true);
+
+ // One completed click is the sole Info-mode action path. This avoids the prior
+ // pointer-up + synthetic-click double toggle that immediately turned Info back on.
+ document.addEventListener('click',function(e){
+  const isInfo=e.target.closest&&e.target.closest('#infoBtn');
+
+  if(isInfo){
+   e.preventDefault();
+   e.stopPropagation();
+   if(e.stopImmediatePropagation)e.stopImmediatePropagation();
+   setInfo(!on);
+   return;
+  }
+
+  if(!on)return;
+
+  const active=e.target.closest&&e.target.closest(
+   'button,select,input,label,[role="button"],.open,.mark,#shell,#triadChordPopup'
+  );
+  if(!active)return;
+
+  e.preventDefault();
+  e.stopPropagation();
+  if(e.stopImmediatePropagation)e.stopImmediatePropagation();
+  show(e.target);
+ },true);
+
+ document.addEventListener('contextmenu',function(e){
+  if(on){e.preventDefault();e.stopPropagation();}
+ },true);
+})();
+</script></body>
 </html>
 
 
