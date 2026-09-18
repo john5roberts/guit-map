@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Guit-Map</title>
+<title>Fretboard 3.57</title>
 <style>
 :root{
   --board-w:183px;
@@ -2680,17 +2680,19 @@ html, body, body *{
 /* === Guit-Map 4.18.9: Scale overlay coexists with jiggle triads === */
 html,body{
   width:100%!important;
-  height:100%!important;
+  min-height:100%!important;
   margin:0!important;
   padding:0!important;
-  overflow:hidden!important;
-  overscroll-behavior:none!important;
-  -webkit-overflow-scrolling:auto!important;
+}
+html{
+  overflow-x:hidden!important;
+  overflow-y:auto!important;
+  -webkit-overflow-scrolling:touch!important;
 }
 body{
-  position:fixed!important;
-  inset:0!important;
-  touch-action:manipulation!important;
+  position:static!important;
+  overflow:visible!important;
+  touch-action:auto!important;
 }
 
 /* === Guit-Map 4.19.0: random diatonic triad test === */
@@ -6028,10 +6030,7 @@ window.addEventListener('load',forceInitialFullRender,{once:true});
     return scroller.scrollHeight>scroller.clientHeight+1;
   }
 
-  document.addEventListener('touchmove',e=>{
-    if(canScrollElement(e.target))return;
-    e.preventDefault();
-  },{passive:false,capture:true});
+  
 
   // Defensive reset in case the preview host tries to shift document scroll.
   window.addEventListener('scroll',()=>{
@@ -6047,23 +6046,27 @@ window.addEventListener('load',forceInitialFullRender,{once:true});
  if(!ib||!card)return;
 
  const help=[
- ['#fingerPositionsBtn','Scale','Tap: show or hide the pentatonic scale. Long press: add or remove the other diatonic scale notes.'],
- ['#editBarsBtn','Bar','Tap: use Bar mode. Long press: All Bars.'],
- ['#editNotesBtn','Note','Tap: enter Note mode, then tap fret positions to add or remove notes. Long press: All Note mode.'],
- ['#cagedBtn','CAGED','Tap: cycle CAGED triad forms. Long press: enter or leave CAGED harmony mode.'],
- ['#box1Btn','Box 1','Tap: show or hide Box 1. Long press: add or remove nearby non-pentatonic diatonic notes.'],
- ['#box2Btn','Box 2','Tap: show or hide Box 2. Long press: add or remove nearby non-pentatonic diatonic notes.'],
- ['#box3Btn','Box 3','Tap: show or hide Box 3. Long press: add or remove nearby non-pentatonic diatonic notes.'],
- ['#box4Btn','Box 4','Tap: show or hide Box 4. Long press: add or remove nearby non-pentatonic diatonic notes.'],
- ['#box5Btn','Box 5','Tap: show or hide Box 5. Long press: add or remove nearby non-pentatonic diatonic notes.'],
- ['#triadBtn','Triad','Tap: show or cycle triads. Long press: choose the string set and Triad Test settings.'],
- ['#intervalBtn','Interval','Tap: open Interval mode and its interval/test choices.'],
- ['#keySel','Key','Tap: choose the key.'],
- ['#modeSel','Mode','Tap: choose the mode.'],
- ['#displayToolsBtn','Tools','Tap: open the display tools.'],
- ['#resetBtn','Reset','Tap: reset the fretboard and controls.'],
- ['#triadChordPopup','Large chord display','In Manual Triad Test: first tap previews the next chord; second tap advances to it on the next downbeat.'],
- ['#shell','Fretboard','Use according to the active control. At startup/reset, tap the empty fretboard to open tuning controls.']
+ ['#fingerPositionsBtn','Scale','Tap: show or hide the major pentatonic scale across the entire fretboard. Long press: add or remove the two remaining notes of the full diatonic scale. Pentatonic notes are dark green; the added diatonic notes are light green.'],
+ ['#editBarsBtn','Bar','Tap: enter Bar mode so a bar/position marker can be added or removed on the fretboard. Long press: All Bars, which applies the bar display across all relevant positions rather than one at a time.'],
+ ['#editNotesBtn','Note','Tap: enter Note mode. Then tap a fret position to add that note; tap an already displayed note to remove it. In-key pentatonic notes are dark green, other in-key notes light green, and out-of-key notes red. Long press: All Note mode. Then tapping one occurrence of a pitch adds or removes every occurrence of that same pitch across the fretboard.'],
+ ['#cagedBtn','CAGED','Tap: show a CAGED triad form for the current diatonic chord; repeated taps cycle through the five CAGED positions. Long press: turn CAGED Harmony mode on or off. In Harmony mode, repeated taps move through the seven diatonic chords while keeping the voicings in the same general neck region.'],
+ ['#box1Btn','Box 1','Tap: show or hide pentatonic Box 1. Boxes are additive, so several Box buttons can be on at once. Long press: add or remove the nearby non-pentatonic notes needed to complete the diatonic scale around Box 1.'],
+ ['#box2Btn','Box 2','Tap: show or hide pentatonic Box 2. Boxes are additive, so several Box buttons can be on at once. Long press: add or remove the nearby non-pentatonic notes needed to complete the diatonic scale around Box 2.'],
+ ['#box3Btn','Box 3','Tap: show or hide pentatonic Box 3. Boxes are additive, so several Box buttons can be on at once. Long press: add or remove the nearby non-pentatonic notes needed to complete the diatonic scale around Box 3.'],
+ ['#box4Btn','Box 4','Tap: show or hide pentatonic Box 4. Boxes are additive, so several Box buttons can be on at once. Long press: add or remove the nearby non-pentatonic notes needed to complete the diatonic scale around Box 4.'],
+ ['#box5Btn','Box 5','Tap: show or hide pentatonic Box 5. Boxes are additive, so several Box buttons can be on at once. Long press: add or remove the nearby non-pentatonic notes needed to complete the diatonic scale around Box 5.'],
+ ['#triadBtn','Triad','Tap: show the triad for the current diatonic chord; repeated taps cycle 1 through 7. With no Box selected, all valid close-position voicings on the chosen string set are shown. With Box button(s) active, Guit-Map chooses the best nearby voicing in that region. Long press: open Triad settings. Choose string set 1–3, 2–4, 3–5, or 4–6; choose Random, a progression, or Mixed phrases; optionally choose Manual; and set meter and tempo for Triad Test.'],
+ ['#intervalBtn','Interval','Tap: open the Interval panel. Select one or more intervals, then tap a displayed/reference note on the fretboard. Guit-Map shows the selected interval above that note within the nearby fret range. The panel also contains Test: choose an interval plus Test to practice finding that interval from randomly presented reference notes. Interval has no long-press function.'],
+ ['#infoBtn','Info','Tap: turn Information mode on. While it is on, normal controls are blocked and tapping a control explains it instead of operating it. Tap Info again to leave Information mode. Info has no long-press function.'],
+ ['#keySel','Key','Tap: choose the parent key. Changing the key recalculates scale, pentatonic, chord, Box, CAGED, interval, and triad relationships for the selected key. There is no long-press function.'],
+ ['#modeSel','Mode','Tap: choose the display/mode option available in this menu. There is no long-press function.'],
+ ['#displayToolsBtn','Tools','Tap: open the additional Tools controls. There is no long-press function on the Tools button itself.'],
+ ['#resetBtn','Reset','Tap: clear the active fretboard displays and return Guit-Map controls to their startup state. Reset also makes the empty fretboard available for opening the tuning panel again. Your interval/note/blank label choice is retained. There is no long-press function.'],
+ ['#triadChordPopup','Large chord display','During automatic Triad Test, this large display identifies the chord to find before its triad is revealed. In Manual Triad Test, while a chord is being played it identifies the current chord. First tap: preview the next chord and remove the old triad positions while the metronome continues. Second tap: arm that previewed chord; it appears and sounds on the next beat 1. There is no long-press function.'],
+ ['#shell','Fretboard','The fretboard is the working area for the active function. In Note mode, tap positions to add/remove notes. In Interval mode, tap the reference or answer position. Tapping an existing displayed finger position when no editing/test function is taking precedence cycles its label through interval number, note name, and blank. At startup or immediately after Reset, tapping the empty fretboard opens the tuning panel.'],
+ ['#tuningPopup','Tuning','Use the minus and plus controls to lower or raise each open string by a semitone, or choose one of the tuning presets. Save applies the tuning to the fretboard.'],
+ ['#triadStringPopup','Triad settings','Choose the three-string set used for triad voicings. The Test section can use random triads, common progression families, or Mixed phrases. Manual changes the test from automatic advancement to the two-tap large-display workflow. Meter controls beats per measure; Tempo controls metronome speed.'],
+ ['#intervalPopup','Interval settings','Select the interval or intervals you want to display. Select Test as well to practice the chosen interval. Done closes the panel and begins the selected interval activity.']
  ];
 
  function show(target){
@@ -6077,7 +6080,7 @@ window.addEventListener('load',forceInitialFullRender,{once:true});
   const el=target.closest&&target.closest('button,select,input,label,[role="button"],.open,.mark');
   if(el){
    const name=el.getAttribute('aria-label')||el.title||el.textContent.trim()||'Control';
-   card.innerHTML='<b>'+name+'</b><br>Tap this control during normal operation to use it.';
+   card.innerHTML='<b>'+name+'</b><br>Tap this control during normal operation to use or select it. If this control supports a long press, its specific long-press action is described when you tap its main control in Information mode.';
    card.classList.add('show');
   }
  }
