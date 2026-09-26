@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Guit-Map</title>
+<title>Fretboard 3.57</title>
 <style>
 :root{
   --board-w:183px;
@@ -47,7 +47,7 @@ button,select{font:inherit}
 .chordclose{border:1px solid #aaa;background:#fff;border-radius:9px;padding:7px 10px;cursor:pointer;width:100%;font-size:15px}
 .wrap{padding:20px}.shell{position:relative;width:var(--board-w);padding-top:var(--head-h);background:linear-gradient(180deg,#bf8b4d 0%,#d8a76b 12%,#e1b67d 50%,#d8a76b 88%,#bf8b4d 100%)
   isolation:isolate!important;
-}.openrow{position:absolute;top:0;left:0;width:100%;height:var(--head-h);pointer-events:none}.open{position:absolute;top:32px;transform:translateX(-50%);width:23px;height:23px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#111;background:transparent;border:0;pointer-events:auto}.open.black,.mark.black{background:var(--black);color:#fff}.open.blue,.mark.blue{background:var(--blue);color:#fff}.open.gray,.mark.gray{background:var(--gray);color:#111;z-index:15}.nut{position:absolute;top:calc(var(--head-h) - 4px);left:0;width:100%;height:var(--nut-h);background:#141414;z-index:5}.board{position:relative;width:100%;height:var(--board-h);overflow:visible}.fret{position:absolute;left:0;width:100%;height:3px;background:linear-gradient(#eee,#888,#eee);box-shadow:0 1px 2px #0006;z-index:2}.string{position:absolute;top:0;height:100%;transform:translateX(-50%);background:linear-gradient(to right,#666,#ddd,#666);border-radius:999px;z-index:3;cursor:pointer}.inlay{position:absolute;width:14px;height:14px;border-radius:50%;background:rgba(245,245,245,.92);left:50%;transform:translate(-50%,-50%);z-index:1}.hit{position:absolute;width:24px;transform:translate(-50%,-50%);border-radius:14px;cursor:pointer;z-index:8}.mark{position:absolute;width:23px;height:23px;border-radius:50%;display:flex;align-items:center;justify-content:center;transform:translate(-50%,-50%);font-size:14px;z-index:10;box-shadow:0 2px 6px #0004;cursor:pointer}.root{outline:none!important}.money{border:3px solid var(--blue)}.triad{background:var(--pink)!important;color:#fff!important;border:2px solid #b00063}.chordring,.triadrootring,.keyrootring{position:absolute;border-radius:50%;transform:translate(-50%,-50%);pointer-events:none}.chordring{width:29px;height:29px;border:3px solid var(--green);background:transparent!important;z-index:18;box-shadow:0 0 0 1px #0005}.triadrootring{width:39px;height:39px;border:3px solid var(--green);background:transparent!important;z-index:19;box-shadow:0 0 0 1px #0005}.keyrootring{width:35px;height:35px;border:1.5px solid #000;background:transparent!important;z-index:16;box-shadow:0 0 0 1px #0005}.triadghost{background:transparent!important;color:var(--green)!important;text-shadow:0 1px 2px #000,0 0 2px #000;box-shadow:none!important;z-index:20;pointer-events:none;font-weight:700}.triadpentdot{position:absolute;width:18px;height:18px;border-radius:50%;background:var(--blue);transform:translate(-50%,-50%);z-index:9;pointer-events:none;box-shadow:0 1px 4px #0005;display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px;font-weight:700;text-shadow:0 1px 2px #000}.keyposdot{position:absolute;width:7px;height:7px;border-radius:50%;background:#000;border:1px solid #fff;transform:translate(-50%,-50%);z-index:16;pointer-events:none;box-shadow:0 1px 2px #0006}.fretlab{position:absolute;right:-18px;transform:translateY(-50%);width:18px;text-align:center;color:#666;z-index:16;border:0;background:transparent;font-size:14px;cursor:pointer;padding:0}.stringlab{position:absolute;border:0;background:transparent;color:#666;font-size:13px;width:18px;height:18px;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:18;padding:0}.stringlab.on,.fretlab.on{color:#111;font-weight:700;text-decoration:underline}.frethi,.stringhi,.cellhi{position:absolute;background:rgba(255,255,255,.45);z-index:1;pointer-events:none}.frethi{left:0;width:100%}.stringhi{top:0;height:100%}.plinksvg,.segfill{position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none;overflow:visible}.plinksvg{z-index:9}.segfill{z-index:12}.segmark{position:absolute;border-radius:999px;z-index:13;pointer-events:auto;box-shadow:0 1px 5px #0005;cursor:pointer}.segmark.blue{background:var(--blue)}.segmark.red{background:#d21818}.playlabel{position:absolute;display:flex;gap:8px;align-items:center;z-index:30;pointer-events:none;transform:translateY(-50%)}.playlabel .now,.playlabel .next{background:rgba(255,255,255,.88);border-radius:10px;padding:6px 9px;box-shadow:0 2px 8px #0003;line-height:1}.playlabel .now{font-size:26px;color:#111}.playlabel .next{font-size:14px;color:#888}
+}.openrow{position:absolute;top:0;left:0;width:100%;height:var(--head-h);pointer-events:none}.open{position:absolute;top:32px;transform:translateX(-50%);width:23px;height:23px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#111;background:transparent;border:0;pointer-events:auto;z-index:2}.open.black,.mark.black{background:var(--black);color:#fff}.open.blue,.mark.blue{background:var(--blue);color:#fff}.open.gray,.mark.gray{background:var(--gray);color:#111;z-index:15}.nut{position:absolute;top:calc(var(--head-h) - 4px);left:0;width:100%;height:var(--nut-h);background:#141414;z-index:5}.board{position:relative;width:100%;height:var(--board-h);overflow:visible}.fret{position:absolute;left:0;width:100%;height:3px;background:linear-gradient(#eee,#888,#eee);box-shadow:0 1px 2px #0006;z-index:2}.string{position:absolute;top:0;height:100%;transform:translateX(-50%);background:linear-gradient(to right,#666,#ddd,#666);border-radius:999px;z-index:3;cursor:pointer}.inlay{position:absolute;width:14px;height:14px;border-radius:50%;background:rgba(245,245,245,.92);left:50%;transform:translate(-50%,-50%);z-index:1}.hit{position:absolute;width:24px;transform:translate(-50%,-50%);border-radius:14px;cursor:pointer;z-index:8}.mark{position:absolute;width:23px;height:23px;border-radius:50%;display:flex;align-items:center;justify-content:center;transform:translate(-50%,-50%);font-size:14px;z-index:10;box-shadow:0 2px 6px #0004;cursor:pointer}.root{outline:none!important}.money{border:3px solid var(--blue)}.triad{background:var(--pink)!important;color:#fff!important;border:2px solid #b00063}.chordring,.triadrootring,.keyrootring{position:absolute;border-radius:50%;transform:translate(-50%,-50%);pointer-events:none}.chordring{width:29px;height:29px;border:3px solid var(--green);background:transparent!important;z-index:18;box-shadow:0 0 0 1px #0005}.triadrootring{width:39px;height:39px;border:3px solid var(--green);background:transparent!important;z-index:19;box-shadow:0 0 0 1px #0005}.keyrootring{width:35px;height:35px;border:1.5px solid #000;background:transparent!important;z-index:16;box-shadow:0 0 0 1px #0005}.triadghost{background:transparent!important;color:var(--green)!important;text-shadow:0 1px 2px #000,0 0 2px #000;box-shadow:none!important;z-index:20;pointer-events:none;font-weight:700}.triadpentdot{position:absolute;width:18px;height:18px;border-radius:50%;background:var(--blue);transform:translate(-50%,-50%);z-index:9;pointer-events:none;box-shadow:0 1px 4px #0005;display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px;font-weight:700;text-shadow:0 1px 2px #000}.keyposdot{position:absolute;width:7px;height:7px;border-radius:50%;background:#000;border:1px solid #fff;transform:translate(-50%,-50%);z-index:16;pointer-events:none;box-shadow:0 1px 2px #0006}.fretlab{position:absolute;right:-18px;transform:translateY(-50%);width:18px;text-align:center;color:#666;z-index:16;border:0;background:transparent;font-size:14px;cursor:pointer;padding:0}.stringlab{position:absolute;border:0;background:transparent;color:#666;font-size:13px;width:18px;height:18px;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:18;padding:0}.stringlab.on,.fretlab.on{color:#111;font-weight:700;text-decoration:underline}.frethi,.stringhi,.cellhi{position:absolute;background:rgba(255,255,255,.45);z-index:1;pointer-events:none}.frethi{left:0;width:100%}.openfrethi{position:absolute;left:0;top:18px;width:100%;height:30px;background:rgba(255,255,255,.45);z-index:0;pointer-events:none}.stringhi{top:0;height:100%}.plinksvg,.segfill{position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none;overflow:visible}.plinksvg{z-index:9}.segfill{z-index:12}.segmark{position:absolute;border-radius:999px;z-index:13;pointer-events:auto;box-shadow:0 1px 5px #0005;cursor:pointer}.segmark.blue{background:var(--blue)}.segmark.red{background:#d21818}.playlabel{position:absolute;display:flex;gap:8px;align-items:center;z-index:30;pointer-events:none;transform:translateY(-50%)}.playlabel .now,.playlabel .next{background:rgba(255,255,255,.88);border-radius:10px;padding:6px 9px;box-shadow:0 2px 8px #0003;line-height:1}.playlabel .now{font-size:26px;color:#111}.playlabel .next{font-size:14px;color:#888}
 .triadmodal{position:fixed;inset:0;background:#0005;display:none;align-items:center;justify-content:center;z-index:999}.triadmodal.on{display:flex}.triadbox{background:#fff;border-radius:18px;padding:16px;box-shadow:0 10px 30px #0005;min-width:210px}.triadbox h3{margin:0 0 10px;font-size:16px}.triadgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}.triadgrid label{display:flex;gap:5px;align-items:center;justify-content:center;border:1px solid #bbb;border-radius:10px;padding:6px;background:#fafafa}.triadactions{display:flex;gap:8px;justify-content:flex-end}.triadactions button{border:1px solid #aaa;background:#fff;border-radius:9px;padding:6px 10px;cursor:pointer}
 .mark.triad{}
 .triadlabel{display:flex;align-items:center;justify-content:center;width:23px;height:23px;}
@@ -540,7 +540,7 @@ body{
 .mark.root,.open.root{box-shadow:0 0 0 2px rgba(255,255,255,.85),0 0 12px rgba(255,255,255,.25)!important}
 .fretlab,.stringlab{color:var(--text-muted)!important;text-shadow:none!important}
 .fretlab.on,.stringlab.on{color:#fff!important}
-.frethi,.stringhi,.cellhi{background:rgba(255,255,255,.08)!important}
+.frethi,.stringhi,.cellhi,.openfrethi{background:rgba(255,255,255,.08)!important}
 .segmark.blue{background:var(--blue)!important}
 .segmark.red{background:var(--red)!important}
 .segmark{box-shadow:0 0 10px rgba(255,255,255,.12),0 3px 10px rgba(0,0,0,.48)!important}
@@ -3374,18 +3374,30 @@ function drawBoard(){
     // restore only that semantic position color (green/light-green/red).
     // Do NOT invoke chromatic/root-ring decoration here.
     const openMark=S.marks.get(keyOf(i,0));
-    if(openMark){
-      o.classList.add(openMark.c);
-      if(openMark.triadSlowFlash)o.classList.add('triadSlowFlash');
+    const visibleOpenMark=openMark&&showInHighlight(i,0)?openMark:null;
+    if(visibleOpenMark){
+      o.classList.add(visibleOpenMark.c);
+      if(visibleOpenMark.triadSlowFlash)o.classList.add('triadSlowFlash');
     }
 
     o.style.left=x+'px';
-    o.textContent=openMark?displayMarkText(openMark):noteAt(i,0);
+    o.textContent=visibleOpenMark?displayMarkText(visibleOpenMark):noteAt(i,0);
     orow.appendChild(o);
   });
   for(let f=1;f<=TOTAL_FRETS;f++){const d=document.createElement('div');d.className='fret';d.style.top=F[f]-1.5+'px';bd.appendChild(d)}
   X.forEach((x,i)=>{const s=document.createElement('div');s.className='string';s.style.left=x+'px';s.style.width=STRING_WIDTH[i]+'px';s.onclick=e=>{e.stopPropagation();toggleStringHighlight(i);render()};bd.appendChild(s)});
   INLAY_FRETS.forEach(f=>{const y=(F[f-1]+F[f])/2;if(f===12){[.3,.7].forEach(p=>addInlay(p*bd.clientWidth,y))}else addInlay(bd.clientWidth/2,y)});
+  {
+    const d=document.createElement('button');
+    d.className='fretlab'+(S.hiFrets.has(0)?' on':'');
+    d.type='button';
+    const y1=(F[0]+F[1])/2;
+    const y2=(F[1]+F[2])/2;
+    d.style.top=(y1-(y2-y1))+'px';
+    d.textContent='0';
+    d.onclick=e=>{e.stopPropagation();toggleFretHighlight(0);render()};
+    bd.appendChild(d);
+  }
   for(let f=1;f<=TOTAL_FRETS;f++){const d=document.createElement('button');d.className='fretlab'+(S.hiFrets.has(f)?' on':'');d.type='button';d.style.top=(F[f-1]+F[f])/2+'px';d.textContent=f;d.onclick=e=>{e.stopPropagation();toggleFretHighlight(f);render()};bd.appendChild(d)}
   X.forEach((x,i)=>{const d=document.createElement('button');d.className='stringlab'+(S.hiStrings.has(i)?' on':'');d.type='button';d.style.left=(x-7)+'px';d.style.top=(bd.clientHeight+3)+'px';d.textContent=6-i;d.onclick=e=>{e.stopPropagation();toggleStringHighlight(i);render()};bd.appendChild(d)});
   for(let s=0;s<6;s++)for(let f=1;f<=TOTAL_FRETS;f++){const h=document.createElement('div');h.className='hit';h.style.left=X[s]+'px';h.style.top=(F[f-1]+F[f])/2+'px';h.style.height=Math.max(28,F[f]-F[f-1])+'px';h.onclick=e=>{e.stopPropagation();press(s,f,e)};bd.appendChild(h)}
@@ -3399,9 +3411,46 @@ function addKeyRootRing(cx,cy,parentEl=bd,pc=S.root){const ring=document.createE
 function addTriadRootDot(cx,cy,pc=S.root){const ring=document.createElement('div');ring.className='triadrootring '+chromaticShapeClass(pc);ring.style.left=cx+'px';ring.style.top=cy+'px';bd.appendChild(ring)}
 function laneBounds(X,s){const l=s===0?0:(X[s-1]+X[s])/2,r=s===5?bd.clientWidth:(X[s]+X[s+1])/2;return[l,r]}
 function renderHighlights(X,F){
-  if(S.hiFrets.size&&S.hiStrings.size){for(const s of S.hiStrings){const [l,r]=laneBounds(X,s);for(const f of S.hiFrets){const h=document.createElement('div');h.className='cellhi';h.style.left=l+'px';h.style.width=(r-l)+'px';h.style.top=F[f-1]+'px';h.style.height=(F[f]-F[f-1])+'px';bd.appendChild(h)}}return}
-  for(const f of S.hiFrets){const h=document.createElement('div');h.className='frethi';h.style.top=F[f-1]+'px';h.style.height=(F[f]-F[f-1])+'px';bd.appendChild(h)}
-  for(const s of S.hiStrings){const [l,r]=laneBounds(X,s);const h=document.createElement('div');h.className='stringhi';h.style.left=l+'px';h.style.width=(r-l)+'px';bd.appendChild(h)}
+  // Fret 0 represents the open-string position above the nut.
+  if(S.hiFrets.has(0)){
+    const h=document.createElement('div');
+    h.className='openfrethi';
+    orow.appendChild(h);
+  }
+
+  if(S.hiFrets.size&&S.hiStrings.size){
+    for(const s of S.hiStrings){
+      const [l,r]=laneBounds(X,s);
+      for(const f of S.hiFrets){
+        if(f===0)continue;
+        const h=document.createElement('div');
+        h.className='cellhi';
+        h.style.left=l+'px';
+        h.style.width=(r-l)+'px';
+        h.style.top=F[f-1]+'px';
+        h.style.height=(F[f]-F[f-1])+'px';
+        bd.appendChild(h);
+      }
+    }
+    return;
+  }
+
+  for(const f of S.hiFrets){
+    if(f===0)continue;
+    const h=document.createElement('div');
+    h.className='frethi';
+    h.style.top=F[f-1]+'px';
+    h.style.height=(F[f]-F[f-1])+'px';
+    bd.appendChild(h);
+  }
+  for(const s of S.hiStrings){
+    const [l,r]=laneBounds(X,s);
+    const h=document.createElement('div');
+    h.className='stringhi';
+    h.style.left=l+'px';
+    h.style.width=(r-l)+'px';
+    bd.appendChild(h);
+  }
 }
 function toggleStringHighlight(s){S.hiStrings.has(s)?S.hiStrings.delete(s):S.hiStrings.add(s)}
 function toggleFretHighlight(f){if(S.lastHi!==null&&S.lastHi!==f){const a=Math.min(S.lastHi,f),b=Math.max(S.lastHi,f);for(let x=a;x<=b;x++)S.hiFrets.add(x);S.lastHi=null;return}if(S.hiFrets.has(f)){S.hiFrets.delete(f);S.lastHi=null}else{S.hiFrets.add(f);S.lastHi=f}}
@@ -4700,6 +4749,56 @@ function updateFixedBoxButtons(){
  }
 }
 function fixedBoxesActive(){return!!(S.fixedBox1||S.fixedBox2||S.fixedBox3||S.fixedBox4||S.fixedBox5)}
+
+// Position-first Box entry. If exactly one fret number is highlighted, tapping
+// a Box button means: place the nut-side/top edge of that standard box at that
+// fret, derive the corresponding major key, then return to ordinary key+box
+// state. No persistent positioning mode is stored.
+function placeFixedBoxFromSingleSelectedFret(boxNum){
+ if(S.hiFrets.size!==1)return false;
+ const desiredTop=[...S.hiFrets][0];
+ const shape=PENT_BOX_OFFSETS[boxNum];
+ if(!shape)return false;
+
+ // Find the key whose NORMAL Box placement has this exact top fret. This is
+ // deliberately solved through the existing box-placement rules so the final
+ // state is indistinguishable from selecting that key and Box normally.
+ let match=null;
+ const originalKey=S.key;
+ for(const [maj,min] of keySet()){
+  S.key=maj+'/'+min;
+  const pts=boxTargets(boxNum);
+  if(pts.length && Math.min(...pts.map(p=>p.f))===desiredTop){
+   match=maj+'/'+min;
+   break;
+  }
+ }
+ S.key=originalKey;
+ if(!match)return false;
+
+ // This placement gesture resolves to one ordinary selected Box in one key.
+ for(let n=1;n<=5;n++){
+  S['fixedBox'+n]=n===boxNum;
+  S['fixedBoxFill'+n]=false;
+ }
+ S.stage=0;S.pentBox=0;S.pentBoxFill=false;
+ S.cagedOn=false;S.cagedHarmonyMode=false;S.cagedHarmonyAnchor=null;
+ S.triadExperimentOn=false;
+
+ keySel.value=match;
+ handleKeyChange();
+
+ // Fret selection was only an input to placement; remove it immediately.
+ S.hiFrets.clear();
+ S.lastHi=null;
+ rebuildFixedBoxes();
+ syncSegmentMarks();
+ updateFingerPositionsButton();updatePentBoxButton();updateCagedButton();
+ updateFixedBoxButtons();updateTriadExperimentButton();
+ render();
+ return true;
+}
+
 function rebuildFixedBoxes(){
  rebuildExperimentDisplay();
 }
@@ -4719,6 +4818,7 @@ function toggleFixedBoxFill(n){
 }
 
 function toggleFixedBox(n){
+ if(n>=1&&n<=5 && placeFixedBoxFromSingleSelectedFret(n))return;
  if(n>=1&&n<=5){
   S['fixedBox'+n]=!S['fixedBox'+n];
   if(!S['fixedBox'+n])S['fixedBoxFill'+n]=false;
@@ -6050,11 +6150,11 @@ window.addEventListener('load',forceInitialFullRender,{once:true});
  ['#editBarsBtn','Bar','Tap: enter Bar mode so a bar/position marker can be added or removed on the fretboard. Long press: All Bars, which applies the bar display across all relevant positions rather than one at a time.'],
  ['#editNotesBtn','Note','Tap: enter Note mode. Then tap a fret position to add that note; tap an already displayed note to remove it. In-key pentatonic notes are dark green, other in-key notes light green, and out-of-key notes red. Long press: All Note mode. Then tapping one occurrence of a pitch adds or removes every occurrence of that same pitch across the fretboard.'],
  ['#cagedBtn','CAGED','Tap: show a CAGED triad form for the current diatonic chord; repeated taps cycle through the five CAGED positions. Long press: turn CAGED Harmony mode on or off. In Harmony mode, repeated taps move through the seven diatonic chords while keeping the voicings in the same general neck region.'],
- ['#box1Btn','Box 1','Tap: show or hide pentatonic Box 1. Boxes are additive, so several Box buttons can be on at once. Long press: add or remove the nearby non-pentatonic notes needed to complete the diatonic scale around Box 1.'],
- ['#box2Btn','Box 2','Tap: show or hide pentatonic Box 2. Boxes are additive, so several Box buttons can be on at once. Long press: add or remove the nearby non-pentatonic notes needed to complete the diatonic scale around Box 2.'],
- ['#box3Btn','Box 3','Tap: show or hide pentatonic Box 3. Boxes are additive, so several Box buttons can be on at once. Long press: add or remove the nearby non-pentatonic notes needed to complete the diatonic scale around Box 3.'],
- ['#box4Btn','Box 4','Tap: show or hide pentatonic Box 4. Boxes are additive, so several Box buttons can be on at once. Long press: add or remove the nearby non-pentatonic notes needed to complete the diatonic scale around Box 4.'],
- ['#box5Btn','Box 5','Tap: show or hide pentatonic Box 5. Boxes are additive, so several Box buttons can be on at once. Long press: add or remove the nearby non-pentatonic notes needed to complete the diatonic scale around Box 5.'],
+ ['#box1Btn','Box 1','Tap: show or hide pentatonic Box 1. If exactly one fret number is selected first (including fret 0 for open strings), Tap instead places the TOP (nut-side edge) of Box 1 at that fret, automatically changes the key, clears the fret selection, and then behaves exactly like an ordinary key + Box 1 selection. Long press: add or remove the 4 and 7—the two non-pentatonic diatonic notes—around Box 1.'],
+ ['#box2Btn','Box 2','Tap: show or hide pentatonic Box 2. If exactly one fret number is selected first (including fret 0 for open strings), Tap instead places the TOP (nut-side edge) of Box 2 at that fret, automatically changes the key, clears the fret selection, and then behaves exactly like an ordinary key + Box 2 selection. Long press: add or remove the 4 and 7—the two non-pentatonic diatonic notes—around Box 2.'],
+ ['#box3Btn','Box 3','Tap: show or hide pentatonic Box 3. If exactly one fret number is selected first (including fret 0 for open strings), Tap instead places the TOP (nut-side edge) of Box 3 at that fret, automatically changes the key, clears the fret selection, and then behaves exactly like an ordinary key + Box 3 selection. Long press: add or remove the 4 and 7—the two non-pentatonic diatonic notes—around Box 3.'],
+ ['#box4Btn','Box 4','Tap: show or hide pentatonic Box 4. If exactly one fret number is selected first (including fret 0 for open strings), Tap instead places the TOP (nut-side edge) of Box 4 at that fret, automatically changes the key, clears the fret selection, and then behaves exactly like an ordinary key + Box 4 selection. Long press: add or remove the 4 and 7—the two non-pentatonic diatonic notes—around Box 4.'],
+ ['#box5Btn','Box 5','Tap: show or hide pentatonic Box 5. If exactly one fret number is selected first (including fret 0 for open strings), Tap instead places the TOP (nut-side edge) of Box 5 at that fret, automatically changes the key, clears the fret selection, and then behaves exactly like an ordinary key + Box 5 selection. Long press: add or remove the 4 and 7—the two non-pentatonic diatonic notes—around Box 5.'],
  ['#triadBtn','Triad','Tap: show the triad for the current diatonic chord; repeated taps cycle 1 through 7. With no Box selected, all valid close-position voicings on the chosen string set are shown. With Box button(s) active, Guit-Map chooses the best nearby voicing in that region. Long press: open Triad settings. Choose string set 1–3, 2–4, 3–5, or 4–6; choose Random, a progression, or Mixed phrases; optionally choose Manual; and set meter and tempo for Triad Test.'],
  ['#intervalBtn','Interval','Tap: open the Interval panel. Select one or more intervals, then tap a displayed/reference note on the fretboard. Guit-Map shows the selected interval above that note within the nearby fret range. The panel also contains Test: choose an interval plus Test to practice finding that interval from randomly presented reference notes. Interval has no long-press function.'],
  ['#infoBtn','Info','Tap: turn Information mode on. While it is on, normal controls are blocked and tapping a control explains it instead of operating it. Tap Info again to leave Information mode. Info has no long-press function.'],
@@ -6063,7 +6163,7 @@ window.addEventListener('load',forceInitialFullRender,{once:true});
  ['#displayToolsBtn','Tools','Tap: open the additional Tools controls. There is no long-press function on the Tools button itself.'],
  ['#resetBtn','Reset','Tap: clear the active fretboard displays and return Guit-Map controls to their startup state. Reset also makes the empty fretboard available for opening the tuning panel again. Your interval/note/blank label choice is retained. There is no long-press function.'],
  ['#triadChordPopup','Large chord display','During automatic Triad Test, this large display identifies the chord to find before its triad is revealed. In Manual Triad Test, while a chord is being played it identifies the current chord. First tap: preview the next chord and remove the old triad positions while the metronome continues. Second tap: arm that previewed chord; it appears and sounds on the next beat 1. There is no long-press function.'],
- ['#shell','Fretboard','The fretboard is the working area for the active function. In Note mode, tap positions to add/remove notes. In Interval mode, tap the reference or answer position. Tapping an existing displayed finger position when no editing/test function is taking precedence cycles its label through interval number, note name, and blank. At startup or immediately after Reset, tapping the empty fretboard opens the tuning panel.'],
+ ['#shell','Fretboard','The fretboard is the working area for the active function. Fret selectors 0–15 at the right can be selected; 0 represents the open-string position above the nut. If exactly one fret is selected and you then tap Box 1–5, that fret becomes the TOP (nut-side edge) of that Box; Guit-Map derives the key, places the Box, and clears the fret selection. In Note mode, tap positions to add/remove notes. In Interval mode, tap the reference or answer position. Tapping an existing displayed finger position when no editing/test function is taking precedence cycles its label through interval number, note name, and blank. At startup or immediately after Reset, tapping the empty fretboard opens the tuning panel.'],
  ['#tuningPopup','Tuning','Use the minus and plus controls to lower or raise each open string by a semitone, or choose one of the tuning presets. Save applies the tuning to the fretboard.'],
  ['#triadStringPopup','Triad settings','Choose the three-string set used for triad voicings. The Test section can use random triads, common progression families, or Mixed phrases. Manual changes the test from automatic advancement to the two-tap large-display workflow. Meter controls beats per measure; Tempo controls metronome speed.'],
  ['#intervalPopup','Interval settings','Select the interval or intervals you want to display. Select Test as well to practice the chosen interval. Done closes the panel and begins the selected interval activity.']
