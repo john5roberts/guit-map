@@ -3567,6 +3567,7 @@ function displayMarkText(m){
 function renderMarks(X,F){
   renderPentLines(X,F);renderManualLines(X,F);renderChordRings(X,F);renderSegments(X,F);renderTriadPentDots(X,F);
   for(const m of S.marks.values()){
+    if(m.triadSlowFlash&&!triadStringOk(m.s))continue;
     if(m.f===0||!showInHighlight(m.s,m.f))continue;
     const cx=X[m.s],cy=(F[m.f-1]+F[m.f])/2;
     const d=document.createElement('div');d.className='mark '+m.c+(m.triadSlowFlash?' triadSlowFlash':'')+(pcAt(m.s,m.f)===S.root&&!m.noEmphasis?' root':'');
@@ -3598,7 +3599,24 @@ function addGhostLabel(cx,cy,text){
   lab.textContent=text;
   bd.appendChild(lab);
 }
-function triadStringOk(s){return S.triadStrings.has(s)}
+function currentTriadStrings(){
+  const ns=new Set();
+  let found=false;
+  for(let n=1;n<=6;n++){
+    const cb=$('triStr'+n);
+    if(!cb)continue;
+    found=true;
+    if(cb.checked)ns.add(6-n);
+  }
+  if(!found)return new Set(S.triadStrings);
+  if(ns.size===0)return new Set([2,3,4]);
+  return ns;
+}
+function commitTriadStringsFromTools(){
+  S.triadStrings=currentTriadStrings();
+  return S.triadStrings;
+}
+function triadStringOk(s){return currentTriadStrings().has(s)}
 function renderLeadingTriadDots(X,F){
   if(!S.leadingTriad||S.leadingTriadChord===null||S.leadingTriadChord===undefined)return;
   const pcs=chordTriadPcs(S.leadingTriadChord);
@@ -3940,6 +3958,9 @@ function closeTriadStringPopup(){
 }
 function chooseTriadStringSet(n){
  S.triadStringSet=n;
+ const sets=[[3,4,5],[2,3,4],[1,2,3],[0,1,2]];
+ S.triadStrings=new Set(sets[n]||sets[1]);
+ syncTriadDialogFromState();
  updateTriadStringChoices();
  closeTriadStringPopup();
 
@@ -3973,39 +3994,54 @@ function updateTriadExperimentButton(){
 // Conventional close-position triads on guitar strings 4, 3, and 2.
 // In the app's zero-based string indices these are 2, 3, and 4.
 function triadInternalStrings(){
- // User-facing 1-2-3, 2-3-4, 3-4-5, 4-5-6 map to the app's
- // low-E-first zero-based string indices below.
- const sets=[[3,4,5],[2,3,4],[1,2,3],[0,1,2]];
- return sets[S.triadStringSet]||sets[1];
+ const a=[...currentTriadStrings()].filter(s=>s>=0&&s<6).sort((x,y)=>x-y);
+ return a.length?a:[2,3,4];
 }
 function selectedDiatonicTriadVoicings(){
- const strings=triadInternalStrings();
+ const selected=triadInternalStrings();
  const pcs=currentTriadPcs();
  const wanted=new Set(pcs);
- const opts=strings.map(s=>{
-  const a=[];
-  for(let f=0;f<=TOTAL_FRETS;f++){
-   const pc=pcAt(s,f);
-   if(wanted.has(pc))a.push({s,f,pc,midi:midiAt(s,f)});
-  }
-  return a;
- });
  const out=[];
- for(const a of opts[0])for(const b of opts[1])for(const c of opts[2]){
-  const pts=[a,b,c];
-  if(new Set(pts.map(p=>p.pc)).size!==3)continue;
-  if(!pcs.every(pc=>pts.some(p=>p.pc===pc)))continue;
-  if(!(a.midi<b.midi&&b.midi<c.midi))continue;
-  if(c.midi-a.midi>=12)continue;
-  const frets=pts.map(p=>p.f);
-  const span=Math.max(...frets)-Math.min(...frets);
-  if(span>4)continue;
-  out.push({
-   points:pts,
-   center:(Math.min(...frets)+Math.max(...frets))/2,
-   span
-  });
+
+ // Triads need three strings. If more than three are selected in Tools,
+ // consider every three-string combination of the selected strings.
+ const groups=[];
+ for(let i=0;i<selected.length-2;i++){
+  for(let j=i+1;j<selected.length-1;j++){
+   for(let k=j+1;k<selected.length;k++){
+    groups.push([selected[i],selected[j],selected[k]]);
+   }
+  }
  }
+ if(!groups.length)return out;
+
+ for(const strings of groups){
+  const opts=strings.map(s=>{
+   const a=[];
+   for(let f=0;f<=TOTAL_FRETS;f++){
+    const pc=pcAt(s,f);
+    if(wanted.has(pc))a.push({s,f,pc,midi:midiAt(s,f)});
+   }
+   return a;
+  });
+
+  for(const a of opts[0])for(const b of opts[1])for(const c of opts[2]){
+   const pts=[a,b,c];
+   if(new Set(pts.map(p=>p.pc)).size!==3)continue;
+   if(!pcs.every(pc=>pts.some(p=>p.pc===pc)))continue;
+   if(!(a.midi<b.midi&&b.midi<c.midi))continue;
+   if(c.midi-a.midi>=12)continue;
+   const frets=pts.map(p=>p.f);
+   const span=Math.max(...frets)-Math.min(...frets);
+   if(span>4)continue;
+   out.push({
+    points:pts,
+    center:(Math.min(...frets)+Math.max(...frets))/2,
+    span
+   });
+  }
+ }
+
  return out.sort((x,y)=>x.center-y.center);
 }
 
@@ -5345,7 +5381,22 @@ function chordQualityForDegree(i){return i===0||i===3||i===4?'Major':i===6?'Dim'
 function triadPentRootPc(){let i=S.chordSelect!==null?S.chordSelect:S.active;if(i!==null&&i!==undefined){const r=parent()[i];return chordQualityForDegree(i)==='Minor'?(r+3)%12:r}const r=activeTriadRootPc();return r!==null?r:parent()[0]}
 function triadPentPcs(){const r=triadPentRootPc();return [0,2,4,7,9].map(i=>(r+i)%12)}
 function triadPentDegreeText(s,f){return ({0:'1′',2:'2′',4:'3′',7:'5′',9:'6′'})[(pcAt(s,f)-triadPentRootPc()+12)%12]||''}
-function renderTriadPentDots(X,F){if(!S.triadPent)return;const pcs=triadPentPcs();for(let s=0;s<6;s++)for(let f=1;f<=TOTAL_FRETS;f++)if(pcs.includes(pcAt(s,f))){const d=document.createElement('div');d.className='triadpentdot '+chromaticShapeClass(pcAt(s,f));d.style.left=X[s]+'px';d.style.top=(F[f-1]+F[f])/2+'px';d.textContent=(S.label==='interval')?'':(isTriadPc(s,f)?'':noteAt(s,f));bd.appendChild(d)}}
+function renderTriadPentDots(X,F){
+  if(!S.triadPent)return;
+  const pcs=triadPentPcs();
+  for(let s=0;s<6;s++){
+    if(!triadStringOk(s))continue;
+    for(let f=1;f<=TOTAL_FRETS;f++){
+      if(!pcs.includes(pcAt(s,f)))continue;
+      const d=document.createElement('div');
+      d.className='triadpentdot '+chromaticShapeClass(pcAt(s,f));
+      d.style.left=X[s]+'px';
+      d.style.top=(F[f-1]+F[f])/2+'px';
+      d.textContent=(S.label==='interval')?'':(isTriadPc(s,f)?'':noteAt(s,f));
+      bd.appendChild(d);
+    }
+  }
+}
 function isBetweenPentGap(s,f){
   const arr=visibleFretsOnString(s);
   for(let i=0;i<arr.length-1;i++){
@@ -5560,7 +5611,68 @@ function renderChords(){
   });
 }
 function triadType(i){const p=rotatedScale(),r=p[i],t=p[(i+2)%7],f=p[(i+4)%7],d3=(t-r+12)%12,d5=(f-r+12)%12;return d3===4&&d5===7?'Major':d3===3&&d5===7?'Minor':d3===3&&d5===6?'Dim':null}
-function setTriad(i){if(!S.triadOn){S.triad=null;return}const p=rotatedScale(),type=triadType(i);if(!type){S.triad=null;return}const pcs=type==='Major'?[p[i],(p[i]+4)%12,(p[i]+7)%12]:type==='Minor'?[p[i],(p[i]+3)%12,(p[i]+7)%12]:[p[i],(p[i]+3)%12,(p[i]+6)%12];const out=[],arr=[3,4,5].map(s=>Array.from({length:TOTAL_FRETS},(_,j)=>j+1).filter(f=>pcs.includes(pcAt(s,f))).map(f=>({s,f,pc:pcAt(s,f)})));for(const A of arr[0])for(const B of arr[1])for(const C of arr[2]){const got=new Set([A.pc,B.pc,C.pc]);if(pcs.every(p=>got.has(p))){const fs=[A.f,B.f,C.f],score=fs.reduce((z,f)=>z+(f<5?5-f:f>7?f-7:0),0)+(Math.max(...fs)-Math.min(...fs))*.25;out.push({root:p[i],type,deg:i,notes:[A,B,C],score})}}S.triad=out.sort((a,b)=>a.score-b.score)[0]||null}
+function setTriad(i){
+  if(!S.triadOn){S.triad=null;return}
+
+  const p=rotatedScale(),type=triadType(i);
+  if(!type){S.triad=null;return}
+
+  const pcs=type==='Major'
+    ?[p[i],(p[i]+4)%12,(p[i]+7)%12]
+    :type==='Minor'
+      ?[p[i],(p[i]+3)%12,(p[i]+7)%12]
+      :[p[i],(p[i]+3)%12,(p[i]+6)%12];
+
+  const selected=[...currentTriadStrings()].filter(s=>s>=0&&s<6).sort((a,b)=>a-b);
+  const usable=selected.length?selected:[2,3,4];
+
+  // A triad requires three strings. When more than three are enabled in Tools,
+  // evaluate every three-string combination and choose the best voicing.
+  const groups=[];
+  for(let a=0;a<usable.length-2;a++){
+    for(let b=a+1;b<usable.length-1;b++){
+      for(let c=b+1;c<usable.length;c++){
+        groups.push([usable[a],usable[b],usable[c]]);
+      }
+    }
+  }
+
+  // If fewer than three strings are selected, there is no playable 3-note triad.
+  if(!groups.length){S.triad=null;return}
+
+  const out=[];
+  for(const strings of groups){
+    const arr=strings.map(s=>
+      Array.from({length:TOTAL_FRETS+1},(_,f)=>f)
+        .filter(f=>pcs.includes(pcAt(s,f)))
+        .map(f=>({s,f,pc:pcAt(s,f),midi:midiAt(s,f)}))
+    );
+
+    for(const A of arr[0])for(const B of arr[1])for(const C of arr[2]){
+      const pts=[A,B,C];
+      const got=new Set(pts.map(x=>x.pc));
+      if(!pcs.every(pc=>got.has(pc)))continue;
+
+      // Keep a musically ordered close-position voicing.
+      if(!(A.midi<B.midi&&B.midi<C.midi))continue;
+      if(C.midi-A.midi>=12)continue;
+
+      const fs=pts.map(x=>x.f);
+      const span=Math.max(...fs)-Math.min(...fs);
+      if(span>4)continue;
+
+      const center=fs.reduce((z,f)=>z+f,0)/3;
+      const score=
+        fs.reduce((z,f)=>z+(f<5?5-f:f>7?f-7:0),0)
+        +span*.25
+        +Math.abs(center-6)*.05;
+
+      out.push({root:p[i],type,deg:i,notes:pts,score});
+    }
+  }
+
+  S.triad=out.sort((a,b)=>a.score-b.score)[0]||null;
+}
 function chordPlainName(i){const r=parent()[i];return i===0||i===3||i===4?spell(r):i===6?spell(r)+'mb5':spell(r)+'min'}
 function forceOpeningTriadState(){
   S.triadOn=false;
@@ -5597,6 +5709,7 @@ function resetApp(){
   S.triadOn=false;
   S.triad=null;
   S.triadStrings=new Set([2,3,4]);
+  S.triadStringSet=1;
   S.leadingTriad=false;
   S.leadingTriadChord=null;
   S.triadPent=false;
@@ -5692,6 +5805,7 @@ function closeAllPopups(except=''){
 function openDisplayDialog(){
   if(S.displayDialogOpen){closeDisplayDialog();return}
   closeAllPopups('tools');
+  syncTriadDialogFromState();
   positionPanelPopup(displayDialog,displayToolsBtn,'below');
   S.displayDialogOpen=true;
   render();
@@ -5720,13 +5834,15 @@ function syncTriadDialogFromState(){
   if(triadPentCheck)triadPentCheck.checked=!!S.triadPent;
 }
 function applyTriadDialogLive(){
-  const ns=new Set();
-  for(let n=1;n<=6;n++){
-    const cb=$('triStr'+n);
-    if(cb&&cb.checked)ns.add(6-n);
-  }
-  if(ns.size===0){ns.add(2);ns.add(3);ns.add(4);}
-  S.triadStrings=ns;
+  const ns=commitTriadStringsFromTools();
+
+  // Keep the compact Triad long-press selector synchronized whenever the
+  // Tools selection exactly matches one of its four standard 3-string sets.
+  const sets=[[3,4,5],[2,3,4],[1,2,3],[0,1,2]];
+  const selected=[...ns].sort((a,b)=>a-b);
+  const match=sets.findIndex(g=>g.length===selected.length&&g.every((v,i)=>v===selected[i]));
+  if(match>=0)S.triadStringSet=match;
+
   S.leadingTriad=!!(leadingTriadCheck&&leadingTriadCheck.checked);
   S.triadPent=!!(triadPentCheck&&triadPentCheck.checked);
 
@@ -5745,6 +5861,19 @@ function applyTriadDialogLive(){
   }else{
     S.triad=null;
   }
+
+  // If a chord is already selected, ensure its legacy Tools triad is rebuilt
+  // immediately using the newly selected strings.
+  if(S.triadOn&&S.triad){
+    S.triad.notes=S.triad.notes.filter(n=>S.triadStrings.has(n.s));
+  }
+
+  // The current Triad/Progression engine uses the same selection immediately.
+  if(S.triadExperimentOn){
+    rebuildExperimentDisplay();
+    syncSegmentMarks();
+  }
+  updateTriadStringChoices();
   render();
 }
 
@@ -6119,7 +6248,15 @@ document.addEventListener('click',e=>{
 
 bpmMinus.onclick=()=>updateBpm(-10);bpmPlus.onclick=()=>updateBpm(10);
 triCancel.onclick=closeTriadDialog;triSave.onclick=saveTriadDialog;triadDialog.onclick=e=>{if(e.target===triadDialog)closeTriadDialog()};
-[triadPentCheck,triStr1,triStr2,triStr3,triStr4,triStr5,triStr6].forEach(el=>{if(el)el.onchange=applyTriadDialogLive});
+[triadPentCheck,triStr1,triStr2,triStr3,triStr4,triStr5,triStr6].forEach(el=>{
+  if(!el)return;
+  el.onchange=applyTriadDialogLive;
+  el.addEventListener('input',applyTriadDialogLive);
+});
+[triStr1,triStr2,triStr3,triStr4,triStr5,triStr6].forEach(el=>{
+  if(!el)return;
+  el.addEventListener('click',()=>setTimeout(applyTriadDialogLive,0));
+});
 if(leadingTriadCheck)leadingTriadCheck.onchange=syncLeadingTriadFromTools;
 if(leadingTriadCheck)leadingTriadCheck.onchange=applyTriadDialogLive;
 if(triadPentCheck)triadPentCheck.onchange=applyTriadDialogLive;
@@ -6256,7 +6393,7 @@ window.addEventListener('load',forceInitialFullRender,{once:true});
  ['#infoBtn','Info','Tap: turn Information mode on. While it is on, normal controls are blocked and tapping a control explains it instead of operating it. Tap Info again to leave Information mode. Info has no long-press function.'],
  ['#keySel','Key','Tap: choose the parent key. Changing the key recalculates scale, pentatonic, chord, Box, CAGED, interval, and triad relationships for the selected key. There is no long-press function.'],
  ['#modeSel','Mode','Tap: choose the display/mode option available in this menu. There is no long-press function.'],
- ['#displayToolsBtn','Tools','Tap: open the additional Tools controls. There is no long-press function on the Tools button itself.'],
+ ['#displayToolsBtn','Tools','Tap: open the additional Tools controls. The Triads section lets you include or exclude individual guitar strings for every triad-related display. The selected strings now control ordinary triad voicings, Leading Triad, Triad Pentatonic, and the current Triad/Progression engine. If more than three strings are enabled, Guit-Map considers all valid three-string combinations among them. There is no long-press function on the Tools button itself.'],
  ['#resetBtn','Reset','Tap: clear the active fretboard displays and return Guit-Map controls to their startup state. Reset also makes the empty fretboard available for opening the tuning panel again. Your interval/note/blank label choice is retained. There is no long-press function.'],
  ['#triadChordPopup','Large chord display','During automatic Triad Test, this large display identifies the chord to find before its triad is revealed. In Manual Triad Test, while a chord is being played it identifies the current chord. First tap: preview the next chord and remove the old triad positions while the metronome continues. Second tap: arm that previewed chord; it appears and sounds on the next beat 1. There is no long-press function.'],
  ['#shell','Fretboard','The fretboard is the working area for the active function. Fret selectors 0–15 at the right can be selected; 0 represents the open-string position above the nut. If exactly one fret is selected and you then tap Box 1–5, that fret becomes the TOP (nut-side edge) of that Box; Guit-Map derives the key, places the Box, and clears the fret selection. In Note mode, tap positions to add/remove notes. In Interval mode, tap the reference or answer position. Tapping an existing displayed finger position when no editing/test function is taking precedence cycles its label through interval number, note name, and blank. At startup or immediately after Reset, tapping the empty fretboard opens the tuning panel.'],
