@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Fretboard 3.57</title>
+<title>Guit-Map</title>
 <style>
 :root{
   --board-w:183px;
@@ -2165,12 +2165,20 @@ button.posbtn, button.posbtn *, button.chordbar, button.chordbar *, button.reset
   box-shadow:none;
 }
 .noteDotGreen{background:#6fa47a;}
-.noteDotRed{background:var(--red);}
+.noteDotRed{
+  background:var(--red);
+  box-shadow:
+    inset 0 0 0 1px rgba(255,238,240,.98),
+    0 0 3px 1px rgba(255,78,91,.18);
+}
 
 /* Note-entry out-of-key color */
 .mark.noteout,.open.noteout{
   background:var(--red)!important;
   color:#fff!important;
+  box-shadow:
+    inset 0 0 0 1px rgba(255,238,240,.98),
+    0 0 3px 1px rgba(255,78,91,.18)!important;
 }
 
 
@@ -2838,6 +2846,54 @@ body{
 #infoHelpCard{display:none;position:fixed;z-index:10050;left:50%;bottom:18px;transform:translateX(-50%);width:min(86vw,360px);box-sizing:border-box;padding:10px 12px;border-radius:10px;background:rgba(15,23,34,.94);color:#f6f9ff;border:1px solid rgba(214,230,255,.30);box-shadow:0 10px 30px rgba(0,0,0,.38);font-size:12px;line-height:1.35;text-align:left;pointer-events:none}
 #infoHelpCard.show{display:block}
 #infoHelpCard b{font-weight:700}
+
+/* Accessibility: black labels on green note dots */
+.mark.pospent,.open.pospent,
+.mark.posfill,.open.posfill{
+  color:#000!important;
+}
+
+
+#colorBtn .colorLabel{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  width:100%;
+  height:100%;
+  font-size:10px;
+  line-height:1;
+  font-weight:700;
+  letter-spacing:.1px;
+  color:#dfe8f6;
+}
+:root{
+  --out-color:#ff4e5b;
+  --out-ring:#fff0f2;
+  --out-halo:rgba(255,78,91,.18);
+}
+.noteDotRed{
+  background:var(--out-color)!important;
+  box-shadow:
+    inset 0 0 0 1px var(--out-ring),
+    0 0 3px 1px var(--out-halo)!important;
+}
+.mark.noteout,.open.noteout{
+  background:var(--out-color)!important;
+  color:#fff!important;
+  box-shadow:
+    inset 0 0 0 1px var(--out-ring),
+    0 0 3px 1px var(--out-halo)!important;
+}
+
+
+#colorBtn,
+#colorBtn.color-red,
+#colorBtn.color-orange,
+#colorBtn.color-blue{
+  background:linear-gradient(180deg,#182435,#101926)!important;
+  box-shadow:none!important;
+}
+
 </style>
 </head>
 <body>
@@ -2862,7 +2918,10 @@ body{
 
         <div class="editControlSeparator" aria-hidden="true"></div>
 
-        <button id="editNotesBtn" class="editmodebtn editControlCentered" type="button" aria-label="Notes" title="Notes">
+        <button id="colorBtn" class="editmodebtn" type="button" aria-label="Out-of-key color: red" title="Out-of-key color: red">
+          <span class="colorLabel">Color</span>
+        </button>
+        <button id="editNotesBtn" class="editmodebtn" type="button" aria-label="Notes" title="Notes">
           <span class="noteIcon" aria-hidden="true">
             <span class="noteDot noteDotGreen"></span>
             <span class="noteDot noteDotRed"></span>
@@ -3077,7 +3136,7 @@ const KEY_SHARP=[['C','Am'],['C#','A#m'],['D','Bm'],['D#','Cm'],['E','C#m'],['F'
 const BASE_MIDI=[40,45,50,55,59,64];
 
 const S={
-  key:'C/Am',mode:null,modeType:'none',acc:'sharp',label:'interval',tuning:[...TUN],tuningMidi:[...STANDARD_TUNING],tuningTapAvailable:true,
+  key:'C/Am',mode:null,modeType:'none',acc:'sharp',label:'interval',outColor:'red',tuning:[...TUN],tuningMidi:[...STANDARD_TUNING],tuningTapAvailable:true,
   marks:new Map(),stage:0,pentBox:0,pentBoxFill:false,cagedOn:false,cagedChord:0,cagedPos:0,cagedHarmonyMode:false,cagedRegionCenter:null,cagedHarmonyAnchor:null,fixedBox1:false,fixedBox2:false,fixedBox3:false,fixedBox4:false,fixedBox5:false,fixedBoxFill1:false,fixedBoxFill2:false,fixedBoxFill3:false,fixedBoxFill4:false,fixedBoxFill5:false,triadExperimentOn:false,triadExperimentChord:0,triadStringSet:1,triadTest:false,triadTestBeats:4,triadTestTempo:80,triadTestTimer:null,triadTestFlashTimer:null,triadTestMetroTimer:null,triadTestBeat:0,triadTestNextChord:null,triadTestLastChord:null,triadTestIntro:true,triadTestIntroBeat:0,triadTestScaleStage:0,triadTestScaleMarks:null,triadTestSource:'random',triadTestManual:false,triadTestManualAdvance:false,triadTestManualPreview:false,triadTestProgressIndex:0,triadTestMixedPhrase:null,triadTestMixedIndex:0,triadTestChordSpec:null,intervalMode:false,intervals:new Set(),intervalBaseMarks:null,intervalTest:false,intervalTestAnchor:null,intervalTestCorrect:null,intervalTestPromptPc:null,intervalTestTimer:null,insertMode:'notes',allNotes:false,pendingSwitch:null,showAllBars:false,root:0,triadOn:false,triad:null,
   triadStrings:new Set([2,3,4]),leadingTriad:false,leadingTriadChord:null,triadPent:false,
   active:null,chordSelect:null,hiFrets:new Set(),hiStrings:new Set(),lastHi:null,
@@ -3092,6 +3151,39 @@ const notes=()=>S.acc==='sharp'?SH:FL;
 const spell=i=>notes()[((i%12)+12)%12];
 const keySet=()=>S.acc==='sharp'?KEY_SHARP:KEY_FLAT;
 const keyObj=()=>keySet().find(k=>k[0]+'/'+k[1]===S.key)||keySet()[0];
+
+function applyOutColor(){
+  const mode=S.outColor||'red';
+  let color='#ff4e5b', ring='#fff0f2', halo='rgba(255,78,91,.18)';
+  if(mode==='orange'){
+    color='#ff9a2f';
+    ring='#fff4e8';
+    halo='rgba(255,154,47,.20)';
+  }else if(mode==='blue'){
+    color='#4da3ff';
+    ring='#eef7ff';
+    halo='rgba(77,163,255,.20)';
+  }
+  document.documentElement.style.setProperty('--out-color',color);
+  document.documentElement.style.setProperty('--out-ring',ring);
+  document.documentElement.style.setProperty('--out-halo',halo);
+
+  const b=$('colorBtn');
+  if(b){
+    b.classList.remove('color-red','color-orange','color-blue');
+    b.classList.add('color-'+mode);
+    b.setAttribute('aria-label','Out-of-key color: '+mode);
+    b.title='Out-of-key color: '+mode;
+  }
+}
+function cycleOutColor(){
+  const seq=['red','orange','blue'];
+  const i=seq.indexOf(S.outColor||'red');
+  S.outColor=seq[(i+1)%seq.length];
+  applyOutColor();
+  render();
+}
+
 const parent=()=>MAJ.map(x=>(ni(keyObj()[0])+x)%12);
 const modeIndex=()=>S.mode===null?0:S.mode;
 const rotatedScale=()=>parent().slice(modeIndex()).concat(parent().slice(0,modeIndex()));
@@ -3395,10 +3487,12 @@ function drawBoard(){
     const y2=(F[1]+F[2])/2;
     d.style.top=(y1-(y2-y1))+'px';
     d.textContent='0';
+    d.onpointerdown=e=>e.stopPropagation();
+    d.ontouchstart=e=>e.stopPropagation();
     d.onclick=e=>{e.stopPropagation();toggleFretHighlight(0);render()};
     bd.appendChild(d);
   }
-  for(let f=1;f<=TOTAL_FRETS;f++){const d=document.createElement('button');d.className='fretlab'+(S.hiFrets.has(f)?' on':'');d.type='button';d.style.top=(F[f-1]+F[f])/2+'px';d.textContent=f;d.onclick=e=>{e.stopPropagation();toggleFretHighlight(f);render()};bd.appendChild(d)}
+  for(let f=1;f<=TOTAL_FRETS;f++){const d=document.createElement('button');d.className='fretlab'+(S.hiFrets.has(f)?' on':'');d.type='button';d.style.top=(F[f-1]+F[f])/2+'px';d.textContent=f;d.onpointerdown=e=>e.stopPropagation();d.ontouchstart=e=>e.stopPropagation();d.onclick=e=>{e.stopPropagation();toggleFretHighlight(f);render()};bd.appendChild(d)}
   X.forEach((x,i)=>{const d=document.createElement('button');d.className='stringlab'+(S.hiStrings.has(i)?' on':'');d.type='button';d.style.left=(x-7)+'px';d.style.top=(bd.clientHeight+3)+'px';d.textContent=6-i;d.onclick=e=>{e.stopPropagation();toggleStringHighlight(i);render()};bd.appendChild(d)});
   for(let s=0;s<6;s++)for(let f=1;f<=TOTAL_FRETS;f++){const h=document.createElement('div');h.className='hit';h.style.left=X[s]+'px';h.style.top=(F[f-1]+F[f])/2+'px';h.style.height=Math.max(28,F[f]-F[f-1])+'px';h.onclick=e=>{e.stopPropagation();press(s,f,e)};bd.appendChild(h)}
   renderMarks(X,F);
@@ -5714,6 +5808,7 @@ resetBtn.onclick=e=>{e.preventDefault();e.stopPropagation();resetApp()};
 
 const editBarsBtn=$('editBarsBtn');
 const editNotesBtn=$('editNotesBtn');
+const colorBtn=$('colorBtn');
 const fingerPositionsBtn=$('fingerPositionsBtn');
 const cagedBtn=$('cagedBtn');
 const box1Btn=$('box1Btn');
@@ -6148,6 +6243,7 @@ window.addEventListener('load',forceInitialFullRender,{once:true});
  const help=[
  ['#fingerPositionsBtn','Scale','Tap: show or hide the major pentatonic scale across the entire fretboard. Long press: add or remove the two remaining notes of the full diatonic scale. Pentatonic notes are dark green; the added diatonic notes are light green.'],
  ['#editBarsBtn','Bar','Tap: enter Bar mode so a bar/position marker can be added or removed on the fretboard. Long press: All Bars, which applies the bar display across all relevant positions rather than one at a time.'],
+ ['#colorBtn','Color','Tap: cycle the out-of-key color through red (default), orange, and blue, then back to red. The change happens immediately everywhere Guit-Map uses the out-of-key color, including fretboard notes and the colored dot in the Note icon. There is no long-press function.'],
  ['#editNotesBtn','Note','Tap: enter Note mode. Then tap a fret position to add that note; tap an already displayed note to remove it. In-key pentatonic notes are dark green, other in-key notes light green, and out-of-key notes red. Long press: All Note mode. Then tapping one occurrence of a pitch adds or removes every occurrence of that same pitch across the fretboard.'],
  ['#cagedBtn','CAGED','Tap: show a CAGED triad form for the current diatonic chord; repeated taps cycle through the five CAGED positions. Long press: turn CAGED Harmony mode on or off. In Harmony mode, repeated taps move through the seven diatonic chords while keeping the voicings in the same general neck region.'],
  ['#box1Btn','Box 1','Tap: show or hide pentatonic Box 1. If exactly one fret number is selected first (including fret 0 for open strings), Tap instead places the TOP (nut-side edge) of Box 1 at that fret, automatically changes the key, clears the fret selection, and then behaves exactly like an ordinary key + Box 1 selection. Long press: add or remove the 4 and 7—the two non-pentatonic diatonic notes—around Box 1.'],
@@ -6238,7 +6334,26 @@ window.addEventListener('load',forceInitialFullRender,{once:true});
   if(on){e.preventDefault();e.stopPropagation();}
  },true);
 })();
-</script></body>
+</script>
+<script>
+(function(){
+  function bindOutColor(){
+    const b=document.getElementById('colorBtn');
+    if(!b||b.dataset.colorBound==='1')return;
+    b.dataset.colorBound='1';
+    b.addEventListener('click',function(e){
+      e.preventDefault();
+      e.stopPropagation();
+      if(typeof cycleOutColor==='function')cycleOutColor();
+    });
+    if(typeof applyOutColor==='function')applyOutColor();
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bindOutColor);
+  else bindOutColor();
+})();
+</script>
+
+</body>
 </html>
 
 
