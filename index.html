@@ -2342,11 +2342,12 @@ html, body, body *{
   }
 }
 
-.fixedBoxIcon{width:30px!important;height:30px!important;display:block!important;margin:auto!important}
-.fixedBoxIcon rect{fill:none!important;stroke:#39a85a!important;stroke-width:2.4!important}
-.fixedBoxIcon text{fill:#39a85a!important;font-size:17px!important;font-weight:800!important;text-anchor:middle!important;dominant-baseline:middle!important}
-#box1Btn.on .fixedBoxIcon rect,#box2Btn.on .fixedBoxIcon rect,#box3Btn.on .fixedBoxIcon rect,#box4Btn.on .fixedBoxIcon rect,#box5Btn.on .fixedBoxIcon rect{fill:#39a85a!important}
-#box1Btn.on .fixedBoxIcon text,#box2Btn.on .fixedBoxIcon text,#box3Btn.on .fixedBoxIcon text,#box4Btn.on .fixedBoxIcon text,#box5Btn.on .fixedBoxIcon text{fill:#fff!important}
+.fixedBoxIcon{width:36px!important;height:36px!important;display:block!important;margin:auto!important;overflow:visible!important}
+.fixedBoxDot{fill:#39a85a!important;stroke:rgba(255,255,255,.16)!important;stroke-width:2!important}
+.fixedBoxLabel{fill:rgba(255,255,255,.36)!important;font-size:74px!important;font-weight:900!important;font-stretch:condensed!important;text-anchor:middle!important;dominant-baseline:middle!important;font-family:"Arial Narrow","Roboto Condensed",Impact,Arial,Helvetica,sans-serif!important}
+#box1Btn.on .fixedBoxDot,#box2Btn.on .fixedBoxDot,#box3Btn.on .fixedBoxDot,#box4Btn.on .fixedBoxDot,#box5Btn.on .fixedBoxDot{fill:#4ee07a!important;stroke:rgba(255,255,255,.24)!important}
+#box1Btn.on .fixedBoxLabel,#box2Btn.on .fixedBoxLabel,#box3Btn.on .fixedBoxLabel,#box4Btn.on .fixedBoxLabel,#box5Btn.on .fixedBoxLabel{fill:rgba(255,255,255,.44)!important}
+
 
 .cageIcon{width:30px!important;height:30px!important;display:block!important;margin:auto!important}
 .cageIcon *{fill:none!important;stroke:#d7d7d7!important;stroke-width:2.2!important;stroke-linecap:round!important;stroke-linejoin:round!important}
@@ -2941,29 +2942,60 @@ body{
 
         <div class="editControlSeparator" aria-hidden="true"></div>
 
-        <button id="box1Btn" class="editmodebtn" type="button" aria-label="Pentatonic Box 1" title="Pentatonic Box 1">
-          <svg class="fixedBoxIcon" viewBox="0 0 36 36" aria-hidden="true">
-            <rect x="6" y="6" width="24" height="24"></rect><text x="18" y="19">1</text>
+        <button id="box1Btn" class="editmodebtn" type="button" aria-label="Pentatonic Box 1, starting interval 6" title="Pentatonic Box 1 • Interval 6">
+          <svg class="fixedBoxIcon" viewBox="0 0 100 100" aria-hidden="true">
+            <circle class="fixedBoxDot" cx="41.5" cy="17.9" r="8.5"></circle>
+            <circle class="fixedBoxDot" cx="58.5" cy="17.9" r="8.5"></circle>
+            <circle class="fixedBoxDot" cx="75.5" cy="17.9" r="8.5"></circle>
+            <circle class="fixedBoxDot" cx="24.5" cy="60.7" r="8.5"></circle>
+            <circle class="fixedBoxDot" cx="7.5" cy="82.1" r="8.5"></circle>
+            <circle class="fixedBoxDot" cx="92.5" cy="82.1" r="8.5"></circle>
+          
+            <text class="fixedBoxLabel" x="50" y="54">6</text>
           </svg>
         </button>
-        <button id="box2Btn" class="editmodebtn" type="button" aria-label="Pentatonic Box 2" title="Pentatonic Box 2">
-          <svg class="fixedBoxIcon" viewBox="0 0 36 36" aria-hidden="true">
-            <rect x="6" y="6" width="24" height="24"></rect><text x="18" y="19">2</text>
+        <button id="box2Btn" class="editmodebtn" type="button" aria-label="Pentatonic Box 2, starting interval 1" title="Pentatonic Box 2 • Interval 1">
+          <svg class="fixedBoxIcon" viewBox="0 0 100 100" aria-hidden="true">
+            <circle class="fixedBoxDot" cx="7.5" cy="28.6" r="8.5"></circle>
+            <circle class="fixedBoxDot" cx="75.5" cy="28.6" r="8.5"></circle>
+            <circle class="fixedBoxDot" cx="92.5" cy="28.6" r="8.5"></circle>
+            <circle class="fixedBoxDot" cx="58.5" cy="50.0" r="8.5"></circle>
+            <circle class="fixedBoxDot" cx="24.5" cy="71.4" r="8.5"></circle>
+            <circle class="fixedBoxDot" cx="41.5" cy="71.4" r="8.5"></circle>
+          
+            <text class="fixedBoxLabel" x="50" y="54">1</text>
           </svg>
         </button>
-        <button id="box3Btn" class="editmodebtn" type="button" aria-label="Pentatonic Box 3" title="Pentatonic Box 3">
-          <svg class="fixedBoxIcon" viewBox="0 0 36 36" aria-hidden="true">
-            <rect x="6" y="6" width="24" height="24"></rect><text x="18" y="19">3</text>
+        <button id="box3Btn" class="editmodebtn" type="button" aria-label="Pentatonic Box 3, starting interval 2" title="Pentatonic Box 3 • Interval 2">
+          <svg class="fixedBoxIcon" viewBox="0 0 100 100" aria-hidden="true">
+            <circle class="fixedBoxDot" cx="41.5" cy="17.9" r="8.5"></circle>
+            <circle class="fixedBoxDot" cx="58.5" cy="60.7" r="8.5"></circle>
+            <circle class="fixedBoxDot" cx="92.5" cy="60.7" r="8.5"></circle>
+            <circle class="fixedBoxDot" cx="75.5" cy="82.1" r="8.5"></circle>
+          
+            <text class="fixedBoxLabel" x="50" y="54">2</text>
           </svg>
         </button>
-        <button id="box4Btn" class="editmodebtn" type="button" aria-label="Pentatonic Box 4" title="Pentatonic Box 4">
-          <svg class="fixedBoxIcon" viewBox="0 0 36 36" aria-hidden="true">
-            <rect x="6" y="6" width="24" height="24"></rect><text x="18" y="19">4</text>
+        <button id="box4Btn" class="editmodebtn" type="button" aria-label="Pentatonic Box 4, starting interval 3" title="Pentatonic Box 4 • Interval 3">
+          <svg class="fixedBoxIcon" viewBox="0 0 100 100" aria-hidden="true">
+            <circle class="fixedBoxDot" cx="58.5" cy="17.9" r="8.5"></circle>
+            <circle class="fixedBoxDot" cx="92.5" cy="17.9" r="8.5"></circle>
+            <circle class="fixedBoxDot" cx="75.5" cy="39.3" r="8.5"></circle>
+            <circle class="fixedBoxDot" cx="41.5" cy="60.7" r="8.5"></circle>
+            <circle class="fixedBoxDot" cx="24.5" cy="82.1" r="8.5"></circle>
+          
+            <text class="fixedBoxLabel" x="50" y="54">3</text>
           </svg>
         </button>
-        <button id="box5Btn" class="editmodebtn" type="button" aria-label="Pentatonic Box 5" title="Pentatonic Box 5">
-          <svg class="fixedBoxIcon" viewBox="0 0 36 36" aria-hidden="true">
-            <rect x="6" y="6" width="24" height="24"></rect><text x="18" y="19">5</text>
+        <button id="box5Btn" class="editmodebtn" type="button" aria-label="Pentatonic Box 5, starting interval 5" title="Pentatonic Box 5 • Interval 5">
+          <svg class="fixedBoxIcon" viewBox="0 0 100 100" aria-hidden="true">
+            <circle class="fixedBoxDot" cx="24.5" cy="28.6" r="8.5"></circle>
+            <circle class="fixedBoxDot" cx="92.5" cy="28.6" r="8.5"></circle>
+            <circle class="fixedBoxDot" cx="41.5" cy="71.4" r="8.5"></circle>
+            <circle class="fixedBoxDot" cx="58.5" cy="71.4" r="8.5"></circle>
+            <circle class="fixedBoxDot" cx="75.5" cy="71.4" r="8.5"></circle>
+          
+            <text class="fixedBoxLabel" x="50" y="54">5</text>
           </svg>
         </button>
         <button id="triadExperimentBtn" class="editmodebtn" type="button" aria-label="Triad" title="Triad">
